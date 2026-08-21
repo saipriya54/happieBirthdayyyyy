@@ -1013,12 +1013,12 @@ function startFireworks(){
     }
     ctx.globalAlpha=1;
     fwFrame++;
-    if(fwFrame<500)requestAnimationFrame(drawFW);
+    if(fwFrame<4000)requestAnimationFrame(drawFW);
     else{c.remove()}
   }
   let launches=0;
   function wave(){
-    if(launches>=12)return;
+    if(launches>=60)return;
     const x=Math.random()*innerWidth*.6+innerWidth*.2;
     const y=Math.random()*innerHeight*.4+innerHeight*.1;
     explode(x,y);
