@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
 <title>happieBirthdayyyyy</title>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
@@ -163,15 +163,14 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .firework-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:5}
 
 /* ===== HAPPY BIRTHDAY SPECIAL ===== */
-.hb-special{font-family:'Dancing Script','Brush Script MT','Segoe Script',cursive;font-size:clamp(3rem,10vw,5rem);color:var(--golden);text-align:center;
-  font-weight:400;letter-spacing:.12em;line-height:1.5;opacity:0;transition:opacity 3s ease;position:relative;z-index:10;
-  text-shadow:0 0 20px rgba(255,230,160,.6),0 0 50px rgba(212,166,60,.35),0 0 100px rgba(212,166,60,.2),0 0 150px rgba(212,166,60,.1);margin:32px 0 16px}
-.hb-special em{font-style:italic;font-weight:400;display:block;font-size:clamp(3rem,10vw,5rem);
-  margin-top:16px;letter-spacing:.04em;background:linear-gradient(90deg,#c89430,#ffe8a0,#fff5d0,#ffe8a0,#d4a63c,#ffe8a0,#c89430);
-  background-size:300% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  animation:hb-shimmer 5s ease-in-out infinite;
-  filter:drop-shadow(0 0 30px rgba(255,230,160,.6)) drop-shadow(0 0 60px rgba(212,166,60,.35)) drop-shadow(0 0 100px rgba(212,166,60,.15))}
-@keyframes hb-shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.hb-special{font-family:'Great Vibes','Brush Script MT',cursive;font-size:clamp(2.8rem,9vw,4.5rem);color:#fff;text-align:center;
+  font-weight:400;letter-spacing:.02em;line-height:1.4;opacity:0;transition:opacity 3s ease;position:relative;z-index:10;
+  text-shadow:0 0 7px #fff,0 0 20px rgba(255,255,255,.7),0 0 40px rgba(255,240,220,.5),0 0 80px rgba(255,230,200,.3),0 0 120px rgba(255,220,180,.15);margin:32px 0 16px}
+.hb-special em{font-style:normal;font-weight:400;display:block;font-size:clamp(3.2rem,11vw,5.5rem);
+  margin-top:8px;letter-spacing:.02em;color:#fff;
+  text-shadow:0 0 7px #fff,0 0 20px rgba(255,255,255,.7),0 0 40px rgba(255,240,220,.5),0 0 80px rgba(255,230,200,.3),0 0 120px rgba(255,220,180,.15);
+  animation:hb-glow 3s ease-in-out infinite alternate}
+@keyframes hb-glow{0%{text-shadow:0 0 7px #fff,0 0 20px rgba(255,255,255,.6),0 0 40px rgba(255,240,220,.4),0 0 80px rgba(255,230,200,.2)}100%{text-shadow:0 0 10px #fff,0 0 25px rgba(255,255,255,.8),0 0 50px rgba(255,240,220,.6),0 0 100px rgba(255,230,200,.35),0 0 150px rgba(255,220,180,.2)}}
 
 /* ===== PHONE / CHINNODU ===== */
 .phone-body{width:clamp(140px,40vw,180px);aspect-ratio:9/19;
