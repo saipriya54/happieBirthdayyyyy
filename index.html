@@ -1035,29 +1035,33 @@ let audioPlaying=false,bgmAudio=null;
 const playlist=['bgm.mp3','song1.mp3','song2.mp3'];
 let playlistIdx=0;
 
-function startBGM(){
-  if(audioPlaying)return;
+function playTrack(idx){
+  playlistIdx=idx%playlist.length;
   if(!bgmAudio){
-    bgmAudio=new Audio(playlist[playlistIdx]);
+    bgmAudio=new Audio();
     bgmAudio.volume=1.0;
     bgmAudio.addEventListener('ended',function(){
-      playlistIdx=(playlistIdx+1)%playlist.length;
-      bgmAudio.src=playlist[playlistIdx];
-      bgmAudio.play().catch(function(){});
+      playTrack(playlistIdx+1);
     });
   }
+  bgmAudio.src=playlist[playlistIdx];
+  bgmAudio.load();
   var p=bgmAudio.play();
   if(p&&p.then)p.then(function(){
     audioPlaying=true;
-  }).catch(function(){});
+  }).catch(function(e){console.warn('Audio play blocked:',e)});
+}
+function startBGM(){
+  if(audioPlaying)return;
+  playTrack(0);
 }
 function toggleAudio(){
-  if(!bgmAudio){bgmAudio=new Audio(playlist[playlistIdx]);bgmAudio.volume=1.0}
+  if(!bgmAudio){playTrack(0);return}
   if(audioPlaying){
     bgmAudio.pause();
     audioPlaying=false;
   }else{
-    startBGM();
+    bgmAudio.play().then(function(){audioPlaying=true}).catch(function(){});
   }
 }
 
