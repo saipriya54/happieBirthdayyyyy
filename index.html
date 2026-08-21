@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>happieBirthdayyyyy</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0c0a12;--bg-warm:#181420;
+  --wall:#3a3048;--wall-hi:#524262;--wall-lo:#241e36;
+  --floor:#3a3028;--floor-hi:#4a3e34;
+  --cream:#f0e4d0;--cream-soft:#ddd0b8;
+  --golden:#d4a63c;--golden-soft:#c49832;--golden-glow:rgba(212,166,60,.12);
+  --amber:#c07828;--amber-soft:rgba(192,120,40,.15);
+  --peach:#c49878;--peach-soft:#a88060;
+  --sage:#7a9872;--sage-soft:rgba(122,152,114,.2);
+  --rose:#a87888;--rose-soft:rgba(168,120,136,.1);
+  --warm-brown:#6a5240;--warm-brown-soft:rgba(106,82,64,.25);
+  --text:#e0d4c0;--text-dim:#8a7a68;--text-soft:#a89880;
+  --lamp:rgba(255,210,120,.1);--lamp-core:rgba(255,195,90,.2);
+  --shadow:rgba(8,6,14,.7)
+}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--cream);
+  font-family:'Cormorant Garamond','Palatino Linotype','Book Antiqua',Palatino,Georgia,serif;
+  font-weight:300;letter-spacing:.02em;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  user-select:none;-webkit-user-select:none;touch-action:pan-y}
+
+/* ===== TEXTURES & OVERLAYS ===== */
+#grain{position:fixed;top:-50%;left:-50%;width:200%;height:200%;pointer-events:none;z-index:9998;opacity:.04;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+#paper-tex{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9997;opacity:.03;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(245,230,208,.03) 2px,rgba(245,230,208,.03) 4px),
+  repeating-linear-gradient(90deg,transparent,transparent 3px,rgba(245,230,208,.02) 3px,rgba(245,230,208,.02) 5px)}
+#vignette{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9996;
+  background:radial-gradient(ellipse 70% 70% at center,transparent 40%,rgba(6,4,10,.6) 100%)}
+
+/* ===== CANVASES ===== */
+#starCanvas,#particleCanvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none}
+#starCanvas{z-index:1}
+#particleCanvas{z-index:50}
+
+/* ===== LAYOUT ===== */
+#app{width:100%;height:100%;position:relative;overflow:hidden;z-index:2}
+.scene{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;opacity:0;pointer-events:none;
+  transition:opacity 1.8s cubic-bezier(.4,0,.2,1);overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+.scene.active{opacity:1;pointer-events:auto}
+.scene-scroll{width:100%;min-height:100%;display:flex;flex-direction:column;align-items:center;
+  padding:60px 24px 80px;gap:28px}
+
+/* ===== TYPOGRAPHY ===== */
+.chapter-title{font-size:clamp(.58rem,1.6vw,.68rem);color:var(--text-dim);letter-spacing:.4em;
+  text-align:center;line-height:1.4;text-transform:uppercase;font-weight:400}
+.chapter-sub{font-size:clamp(1.05rem,3.8vw,1.5rem);color:var(--cream);letter-spacing:.06em;text-align:center;margin-top:-4px;font-weight:300}
+.narration{font-size:clamp(1rem,3vw,1.15rem);color:var(--text);text-align:center;line-height:2;
+  max-width:320px;margin:0 auto;opacity:0;transform:translateY(16px);font-weight:300;
+  transition:opacity 1.6s cubic-bezier(.25,.1,.25,1),transform 1.6s cubic-bezier(.25,.1,.25,1)}
+.narration.visible{opacity:1;transform:translateY(0)}
+.narration em{color:var(--golden);font-style:italic;font-weight:400}
+
+/* ===== BUTTONS ===== */
+.story-btn{font-family:inherit;font-size:clamp(.7rem,2vw,.8rem);font-weight:300;color:var(--golden);
+  background:transparent;border:1px solid rgba(212,166,60,.18);padding:15px 36px;
+  border-radius:100px;cursor:pointer;letter-spacing:.22em;text-transform:uppercase;
+  transition:all .6s ease;min-height:50px;-webkit-tap-highlight-color:transparent}
+.story-btn:active{background:rgba(212,166,60,.04);border-color:rgba(212,166,60,.35)}
+.story-btn.secondary{color:var(--text-soft);
+  background:transparent;border-color:rgba(255,255,255,.06)}
+
+/* ===== WELCOME ===== */
+.earth-container{width:clamp(130px,38vw,200px);height:clamp(130px,38vw,200px);position:relative;
+  opacity:0;transform:scale(.6);transition:opacity 2.5s ease,transform 2.5s cubic-bezier(.4,0,.2,1)}
+.earth-container.visible{opacity:1;transform:scale(1)}
+.earth-glow{position:absolute;top:-30%;left:-30%;width:160%;height:160%;border-radius:50%;
+  background:radial-gradient(circle,rgba(100,160,240,.06) 0%,rgba(60,120,200,.03) 30%,transparent 60%);
+  animation:pulse-glow 8s ease-in-out infinite}
+@keyframes pulse-glow{0%,100%{opacity:.6;transform:scale(1)}50%{opacity:1;transform:scale(1.06)}}
+.welcome-title{font-size:clamp(.65rem,1.8vw,.75rem);color:var(--text-dim);letter-spacing:.3em;
+  text-align:center;line-height:2.2;opacity:0;transition:opacity 3s ease;font-weight:300}
+.welcome-title.visible{opacity:1}
+.welcome-title em{color:var(--golden);font-style:normal;font-weight:300;font-size:clamp(1.4rem,5vw,2rem);display:block;margin-top:8px;letter-spacing:.12em}
+
+/* (bedroom CSS removed — replaced by constellation) */
+
+/* ===== POPUP ===== */
+.popup-overlay{position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(8,6,14,.96);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  display:flex;align-items:center;justify-content:center;z-index:100;
+  opacity:0;pointer-events:none;transition:opacity .7s ease;padding:24px}
+.popup-overlay.active{opacity:1;pointer-events:auto}
+.popup-content{max-width:340px;width:100%;text-align:center;display:flex;flex-direction:column;align-items:center;gap:18px}
+.popup-content .narration{opacity:1;transform:none}
+.popup-close{font-family:inherit;font-size:.6rem;font-weight:300;color:var(--text-dim);background:none;
+  border:none;cursor:pointer;padding:16px;letter-spacing:.3em;-webkit-tap-highlight-color:transparent;
+  transition:color .3s ease}
+
+/* ===== TRAITS ===== */
+.traits-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:22px;max-width:380px}
+.trait-orb{width:96px;height:96px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;position:relative;transition:all .5s ease;-webkit-tap-highlight-color:transparent}
+.trait-orb .orb-bg{position:absolute;width:100%;height:100%;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,rgba(212,166,60,.06),rgba(20,18,40,.4));
+  border:1px solid rgba(212,166,60,.08);transition:all .5s ease;
+  box-shadow:0 4px 24px rgba(0,0,0,.25)}
+.trait-orb:active .orb-bg{border-color:rgba(212,166,60,.25);
+  box-shadow:0 0 30px rgba(212,166,60,.08)}
+.trait-orb .orb-label{position:relative;z-index:1;font-size:.52rem;letter-spacing:.25em;color:var(--golden);text-align:center;font-weight:300;text-transform:uppercase}
+
+/* ===== PLANETS ===== */
+.planets-container{position:relative;width:100%;max-width:380px;min-height:500px}
+.planet{position:absolute;cursor:pointer;transition:all .5s ease;-webkit-tap-highlight-color:transparent}
+.planet-body{width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  text-align:center;padding:8px;font-size:.46rem;line-height:1.4;color:var(--cream-soft);letter-spacing:.02em;
+  position:relative;font-weight:300;
+  box-shadow:0 4px 20px rgba(0,0,0,.35),inset 0 -2px 8px rgba(0,0,0,.2)}
+
+/* ===== DAY IN LIFE ===== */
+.time-stamp{font-size:clamp(.6rem,1.6vw,.7rem);color:var(--text-dim);letter-spacing:.35em;text-align:center;font-weight:300}
+.choice-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.food-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;max-width:300px;width:100%}
+.food-choice{display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 8px;border-radius:14px;
+  background:rgba(212,166,60,.02);border:1px solid rgba(212,166,60,.06);
+  cursor:pointer;transition:all .4s ease;-webkit-tap-highlight-color:transparent;font-weight:300}
+.food-choice:active{background:rgba(212,166,60,.08);border-color:rgba(212,166,60,.2)}
+.food-emoji{font-size:1.8rem}
+.food-label{font-size:.52rem;color:var(--cream-soft);letter-spacing:.18em}
+
+/* ===== EFFECTS ===== */
+.happiness-float{position:fixed;pointer-events:none;z-index:200;font-size:.85rem;color:var(--golden);
+  font-weight:300;letter-spacing:.05em;
+  text-shadow:0 0 12px rgba(212,166,60,.25);animation:float-up 2s ease forwards}
+@keyframes float-up{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-80px) scale(1.1)}}
+
+/* ===== MINI GAME ===== */
+.mini-game-area{width:100%;max-width:320px;aspect-ratio:3/4;
+  background:linear-gradient(180deg,rgba(14,12,24,.8),rgba(26,24,50,.5));
+  border-radius:16px;border:1px solid rgba(212,166,60,.05);position:relative;overflow:hidden;touch-action:none;
+  box-shadow:inset 0 0 50px rgba(0,0,0,.4)}
+.game-target{position:absolute;width:44px;height:44px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,rgba(255,230,170,.9),var(--golden));
+  box-shadow:0 0 16px rgba(212,166,60,.3),0 0 40px rgba(212,166,60,.08);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;
+  -webkit-tap-highlight-color:transparent;transition:transform .12s ease}
+.game-target:active{transform:scale(.85)}
+.game-score{position:absolute;top:14px;right:14px;font-size:.62rem;color:var(--golden);letter-spacing:.18em;font-weight:300}
+.game-timer{position:absolute;top:14px;left:14px;font-size:.62rem;color:var(--text-dim);letter-spacing:.18em;font-weight:300}
+
+/* ===== 25 ===== */
+.big-25{font-size:clamp(5rem,22vw,9rem);color:var(--golden);text-align:center;line-height:1;opacity:.08;
+  transition:opacity 3s ease;font-weight:200;letter-spacing:-.02em}
+.stars-25-grid{position:relative;width:240px;height:200px;margin:0 auto}
+.star-25{position:absolute;width:22px;height:22px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity .8s ease,transform .8s ease}
+.star-25 svg{width:100%;height:100%;fill:rgba(212,166,60,.15);transition:all .8s ease}
+.star-25.lit svg{fill:rgba(212,166,60,.5)}
+.star-25.bright svg{fill:var(--golden);filter:drop-shadow(0 0 12px var(--golden)) drop-shadow(0 0 24px rgba(212,166,60,.25))}
+.star-25.fading{opacity:0!important;transform:scale(.3)!important;transition:opacity 1.2s ease,transform 1.2s ease}
+
+/* ===== FIREWORKS ===== */
+.firework-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9998}
+
+/* ===== HAPPY BIRTHDAY SPECIAL ===== */
+.hb-special{font-family:inherit;font-size:clamp(1.6rem,5vw,2.4rem);color:var(--golden);text-align:center;
+  font-weight:200;letter-spacing:.12em;line-height:1.6;opacity:0;transition:opacity 3s ease;
+  text-shadow:0 0 30px rgba(212,166,60,.3),0 0 60px rgba(212,166,60,.15),0 0 100px rgba(212,166,60,.08);margin:32px 0 16px}
+.hb-special em{font-style:italic;font-weight:300;display:block;font-size:clamp(2.8rem,9vw,4.2rem);
+  margin-top:12px;letter-spacing:.06em;background:linear-gradient(90deg,#c89430,#ffe8a0,#d4a63c,#ffe8a0,#c89430);
+  background-size:200% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:hb-shimmer 4s ease-in-out infinite;
+  filter:drop-shadow(0 0 24px rgba(212,166,60,.5)) drop-shadow(0 0 50px rgba(212,166,60,.2))}
+@keyframes hb-shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ===== PHONE / CHINNODU ===== */
+.phone-body{width:clamp(140px,40vw,180px);aspect-ratio:9/19;
+  background:linear-gradient(165deg,#1a1828,#141220);
+  border-radius:24px;border:1.5px solid rgba(255,255,255,.04);position:relative;overflow:hidden;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;margin:0 auto;
+  box-shadow:0 10px 50px rgba(0,0,0,.5),0 0 0 .5px rgba(255,255,255,.02)}
+.phone-notch{width:28%;height:16px;background:var(--bg);border-radius:0 0 8px 8px;position:absolute;top:0}
+.phone-notification{width:80%;background:rgba(212,166,60,.04);
+  border:1px solid rgba(212,166,60,.08);border-radius:12px;padding:14px;
+  opacity:0;transform:translateY(6px);transition:all 1s cubic-bezier(.25,.1,.25,1)}
+.phone-notification.visible{opacity:1;transform:translateY(0)}
+.notif-contact{font-size:.6rem;color:var(--golden);letter-spacing:.18em;margin-bottom:4px;font-weight:300}
+.notif-message{font-size:.55rem;color:var(--cream-soft);line-height:1.5;font-weight:300}
+@keyframes phone-vibrate{0%,100%{transform:translateX(0)}10%,30%,50%,70%,90%{transform:translateX(-2px)}20%,40%,60%,80%{transform:translateX(2px)}}
+.phone-vibrating{animation:phone-vibrate .4s ease 3}
+.chat-bubble{background:rgba(212,166,60,.04);
+  border:1px solid rgba(212,166,60,.1);border-radius:16px 16px 4px 16px;
+  padding:16px 20px;max-width:260px;font-size:clamp(.82rem,2.5vw,.92rem);
+  color:var(--cream);line-height:1.8;text-align:left;font-weight:300}
+
+/* ===== ACHIEVEMENTS ===== */
+.achievement{background:rgba(212,166,60,.03);
+  border:1px solid rgba(212,166,60,.1);border-radius:16px;padding:28px;text-align:center;
+  max-width:280px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.achievement-title{font-size:.52rem;color:var(--text-dim);letter-spacing:.35em;font-weight:300}
+.achievement-text{font-size:.9rem;color:var(--golden);letter-spacing:.08em;font-weight:300}
+.achievement-sub{font-size:.62rem;color:var(--text-dim);font-style:italic;font-weight:300}
+
+/* ===== MIRROR ===== */
+.mirror-frame{width:clamp(120px,35vw,160px);aspect-ratio:3/4;border-radius:50% 50% 45% 45%;
+  border:1.5px solid rgba(212,166,60,.15);
+  background:linear-gradient(150deg,rgba(30,26,40,.4),rgba(14,12,24,.7));
+  display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;
+  transition:all .6s ease;-webkit-tap-highlight-color:transparent;
+  box-shadow:0 8px 30px rgba(0,0,0,.35)}
+.mirror-frame:active{border-color:rgba(212,166,60,.3)}
+.mirror-text{font-size:clamp(.62rem,1.8vw,.75rem);color:var(--golden);text-align:center;
+  letter-spacing:.08em;padding:16px;opacity:0;transition:opacity 1.2s ease;font-weight:300}
+.mirror-text.visible{opacity:1}
+.mirror-reflection{position:absolute;top:-50%;left:-50%;width:200%;height:200%;
+  background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,.025) 50%,transparent 60%);
+  animation:mirror-shine 6s ease-in-out infinite;pointer-events:none}
+@keyframes mirror-shine{0%,100%{transform:translateX(-30%) translateY(-30%)}50%{transform:translateX(30%) translateY(30%)}}
+
+/* ===== PROGRESS DOTS ===== */
+.progress-dots{position:fixed;right:10px;top:50%;transform:translateY(-50%);display:flex;
+  flex-direction:column;gap:7px;z-index:90;opacity:0;transition:opacity .6s ease}
+.progress-dots.visible{opacity:1}
+.progress-dot{width:4px;height:4px;border-radius:50%;background:rgba(212,166,60,.1);
+  cursor:pointer;transition:all .4s ease;-webkit-tap-highlight-color:transparent}
+.progress-dot.active{background:var(--golden);box-shadow:0 0 8px rgba(212,166,60,.25)}
+
+/* ===== FINALE ===== */
+.final-star{width:5px;height:5px;background:var(--golden);border-radius:50%;
+  box-shadow:0 0 10px var(--golden),0 0 30px rgba(212,166,60,.2);
+  animation:pulse-glow 6s ease-in-out infinite;margin:40px auto}
+.wish-item{opacity:0;transform:translateY(15px);transition:opacity .9s ease,transform .9s ease}
+.wish-item.visible{opacity:1;transform:translateY(0)}
+
+/* ===== PLANET FLOATS ===== */
+@keyframes planetFloat0{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes planetFloat1{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes planetFloat2{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+/* ===== RESPONSIVE ===== */
+@media(min-width:768px){
+  .narration{max-width:440px}
+  .bedroom{max-width:440px}
+  .popup-content{max-width:420px}
+  .traits-grid{max-width:480px}
+  .trait-orb{width:108px;height:108px}
+  .trait-orb .orb-label{font-size:.6rem}
+  .planets-container{max-width:480px;min-height:600px}
+  .planet-body{width:80px;height:80px;font-size:.52rem}
+}
+@media(min-width:1024px){
+  .narration{max-width:500px;font-size:1.18rem}
+  .scene-scroll{padding:80px 48px 100px}
+}
+/* ===== CONSTELLATION ===== */
+#constellation-stage{position:relative;width:clamp(280px,75vw,360px);height:clamp(280px,75vw,360px);margin:0 auto;
+  overflow:visible}
+/* Moon */
+.c-moon{position:absolute;top:4%;right:6%;width:48px;height:48px;border-radius:50%;
+  background:radial-gradient(circle at 38% 35%,rgba(255,252,235,.12) 0%,rgba(220,210,180,.06) 50%,transparent 70%);
+  box-shadow:0 0 40px 12px rgba(255,245,200,.04),0 0 80px 24px rgba(255,240,180,.02);
+  pointer-events:none;animation:moon-glow 8s ease-in-out infinite}
+.c-moon::before{content:'';position:absolute;top:8%;left:15%;width:75%;height:75%;border-radius:50%;
+  background:radial-gradient(circle at 60% 40%,transparent 45%,rgba(180,170,140,.05) 100%)}
+@keyframes moon-glow{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.04)}}
+/* Clouds */
+.c-cloud{position:absolute;pointer-events:none;border-radius:50%;opacity:0;
+  background:radial-gradient(ellipse,rgba(180,180,200,.04) 0%,rgba(140,140,170,.02) 40%,transparent 70%);
+  animation:cloud-drift linear infinite}
+.c-cloud:nth-child(1){width:180px;height:40px;top:12%;left:-10%;animation-duration:45s;opacity:.5}
+.c-cloud:nth-child(2){width:140px;height:30px;top:35%;right:-8%;animation-duration:55s;animation-delay:-20s;opacity:.4}
+.c-cloud:nth-child(3){width:200px;height:35px;bottom:18%;left:5%;animation-duration:60s;animation-delay:-10s;opacity:.35}
+@keyframes cloud-drift{0%{transform:translateX(-20px);opacity:0}10%{opacity:var(--cloud-o,.4)}
+  90%{opacity:var(--cloud-o,.4)}100%{transform:translateX(calc(100% + 60px));opacity:0}}
+/* Stars — sparkling with cross rays */
+.cstar{position:absolute;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .8s cubic-bezier(.25,.1,.25,1)}
+.cstar-dot{width:14px;height:14px;border-radius:50%;position:relative;display:flex;align-items:center;justify-content:center}
+/* Core glow */
+.cstar-dot::before{content:'';position:absolute;width:100%;height:100%;border-radius:50%;
+  background:radial-gradient(circle,rgba(212,166,60,.5) 0%,rgba(212,166,60,.15) 40%,transparent 70%);
+  transition:all .6s ease}
+/* Cross-shaped rays */
+.cstar-dot::after{content:'';position:absolute;width:200%;height:200%;
+  background:
+    linear-gradient(0deg,transparent 42%,rgba(255,240,180,.12) 48%,rgba(255,240,180,.2) 50%,rgba(255,240,180,.12) 52%,transparent 58%),
+    linear-gradient(90deg,transparent 42%,rgba(255,240,180,.12) 48%,rgba(255,240,180,.2) 50%,rgba(255,240,180,.12) 52%,transparent 58%);
+  opacity:0;transition:opacity 1s ease;pointer-events:none}
+.cstar.waiting .cstar-dot::before{animation:cstar-pulse 3s ease-in-out infinite}
+.cstar.waiting .cstar-dot::after{opacity:.3;animation:cstar-ray-pulse 3s ease-in-out infinite}
+/* Revealed state — bright sparkle */
+.cstar.revealed .cstar-dot{width:10px;height:10px}
+.cstar.revealed .cstar-dot::before{
+  background:radial-gradient(circle,rgba(255,248,220,1) 0%,rgba(212,166,60,.6) 30%,rgba(212,166,60,.2) 60%,transparent 80%);
+  box-shadow:0 0 8px 2px rgba(255,240,180,.4),0 0 20px 4px rgba(212,166,60,.15)}
+.cstar.revealed .cstar-dot::after{opacity:.7;animation:cstar-twinkle 4s ease-in-out infinite}
+.cstar.done{pointer-events:none;opacity:.5}
+@keyframes cstar-pulse{0%,100%{transform:scale(1);opacity:.4}50%{transform:scale(1.8);opacity:.9}}
+@keyframes cstar-ray-pulse{0%,100%{opacity:.15;transform:scale(.8) rotate(0deg)}50%{opacity:.4;transform:scale(1.2) rotate(15deg)}}
+@keyframes cstar-twinkle{0%,100%{opacity:.5;transform:scale(.9) rotate(0deg)}25%{opacity:.9;transform:scale(1.1) rotate(8deg)}
+  50%{opacity:.6;transform:scale(1) rotate(-5deg)}75%{opacity:1;transform:scale(1.15) rotate(3deg)}}
+/* Connecting lines */
+.cline{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}
+.cline line{stroke:rgba(212,166,60,.08);stroke-width:.5;transition:opacity 1.5s ease;
+  filter:drop-shadow(0 0 2px rgba(212,166,60,.1))}
+/* Labels */
+.cstar-label{position:absolute;top:50%;left:calc(100% + 12px);transform:translateY(-50%);
+  font-size:clamp(.48rem,1.3vw,.56rem);color:var(--text-dim);letter-spacing:.18em;white-space:nowrap;
+  opacity:0;transition:opacity 1s ease;font-weight:300;text-transform:uppercase;pointer-events:none}
+.cstar.revealed .cstar-label{opacity:.6}
+.cstar:nth-child(even) .cstar-label{left:auto;right:calc(100% + 12px)}
+
+/* ===== AUDIO TOGGLE ===== */
+#audio-btn{display:none}
+/* yt-wrap removed — using local audio */
+
+/* ===== BIRTHDAY CANDLE ===== */
+.candle-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;margin:30px 0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.candle{width:36px;height:110px;background:linear-gradient(180deg,#e8c86a 0%,#d4a63c 40%,#c8943a 100%);border-radius:4px 4px 2px 2px;position:relative;box-shadow:0 0 18px rgba(212,166,60,.15)}
+.candle::before{content:'';position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:3px;height:14px;background:linear-gradient(180deg,#333,#555);border-radius:1px}
+.candle-stripe{position:absolute;width:100%;height:3px;background:rgba(255,255,255,.12);border-radius:2px}
+.candle-flame{position:absolute;top:-48px;left:50%;transform:translateX(-50%);width:18px;height:36px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(ellipse at 50% 60%,#fff 0%,#ffe080 25%,#ff9020 50%,#ff5500 70%,transparent 100%);animation:flame-dance 0.4s ease-in-out infinite alternate;filter:blur(0.5px)}
+.candle-flame::after{content:'';position:absolute;top:4px;left:50%;transform:translateX(-50%);width:8px;height:16px;border-radius:50%;background:radial-gradient(ellipse,#fff 0%,#ffe8a0 40%,transparent 70%)}
+.candle-glow{position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(255,180,60,.2) 0%,rgba(255,140,40,.08) 40%,transparent 70%);animation:flame-glow 1.5s ease-in-out infinite alternate;pointer-events:none}
+@keyframes flame-dance{0%{transform:translateX(-50%) scaleX(1) scaleY(1) rotate(-2deg)}100%{transform:translateX(-50%) scaleX(.85) scaleY(1.08) rotate(2deg)}}
+@keyframes flame-glow{0%{opacity:.7;transform:translateX(-50%) scale(1)}100%{opacity:1;transform:translateX(-50%) scale(1.1)}}
+.candle-blown .candle-flame,.candle-blown .candle-glow{animation:none;opacity:0;transition:opacity .5s ease}
+.candle-smoke{position:absolute;top:-50px;left:50%;width:4px;height:30px;opacity:0}
+.candle-blown .candle-smoke{opacity:1;animation:smoke-rise 2s ease-out forwards}
+@keyframes smoke-rise{0%{opacity:.5;transform:translateX(-50%) translateY(0) scaleY(1)}100%{opacity:0;transform:translateX(-50%) translateY(-50px) scaleY(2) scaleX(3)}}
+.candle-smoke::after{content:'';position:absolute;width:100%;height:100%;background:rgba(200,200,200,.3);border-radius:50%;filter:blur(3px)}
+.candle-hint{font-size:clamp(.65rem,1.8vw,.75rem);color:var(--text-dim);letter-spacing:.15em;opacity:0;transition:opacity 1.5s ease;font-style:italic}
+.candle-hint.visible{opacity:1}
+
+/* ===== BUTTERFLY ===== */
+.butterfly-wrap{position:relative;width:100%;height:140px;margin:24px 0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.butterfly{position:absolute;left:50%;top:50%;animation:bf-float 10s ease-in-out infinite;filter:drop-shadow(0 0 8px rgba(212,166,60,.3))}
+@keyframes bf-float{0%{transform:translate(-50%,-50%) translate(0,0)}12%{transform:translate(-50%,-50%) translate(12px,-8px)}25%{transform:translate(-50%,-50%) translate(-8px,-4px)}37%{transform:translate(-50%,-50%) translate(6px,6px)}50%{transform:translate(-50%,-50%) translate(-14px,-2px)}62%{transform:translate(-50%,-50%) translate(4px,-10px)}75%{transform:translate(-50%,-50%) translate(-6px,4px)}87%{transform:translate(-50%,-50%) translate(10px,-6px)}100%{transform:translate(-50%,-50%) translate(0,0)}}
+.bf-wing{fill:rgba(212,166,60,.6);transition:fill .3s ease}
+.bf-wing-inner{fill:rgba(255,220,150,.4)}
+.butterfly svg{width:60px;height:60px}
+.bf-l,.bf-r{transform-origin:center;animation:bf-flap 1.2s ease-in-out infinite alternate}
+.bf-r{animation-delay:0.1s}
+@keyframes bf-flap{0%{transform:scaleX(1)}50%{transform:scaleX(0.55)}100%{transform:scaleX(1)}}
+.butterfly.caught{animation:bf-caught 1.5s ease forwards !important}
+.butterfly.caught .bf-l,.butterfly.caught .bf-r{animation:none;transform:scaleX(1)}
+.butterfly.caught .bf-wing{fill:rgba(212,166,60,.9)}
+@keyframes bf-caught{0%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.3)}100%{transform:translate(-50%,-50%) scale(0);opacity:0}}
+.bf-hint{font-size:clamp(.65rem,1.8vw,.75rem);color:var(--text-dim);letter-spacing:.15em;text-align:center;opacity:0;transition:opacity 1.5s ease;font-style:italic}
+.bf-hint.visible{opacity:1}
+.bf-descend{animation:bf-descend 4s ease-out forwards}
+@keyframes bf-descend{0%{transform:translate(-50%,-200%) scale(.3);opacity:0}30%{opacity:1;transform:translate(-50%,-120%) scale(.8)}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}
+.bf-floating{animation:bf-float 10s ease-in-out infinite !important}
+
+/* ===== MAGIC WAND ===== */
+.wand-wrap{display:flex;flex-direction:column;align-items:center;gap:16px;margin:40px 0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.wand{width:10px;height:110px;background:linear-gradient(180deg,#3a2a1a,#5a4430,#3a2a1a);border-radius:3px;position:relative;transform:rotate(-25deg);transition:transform .5s ease;box-shadow:inset 1px 0 2px rgba(255,255,255,.08)}
+.wand-tip{position:absolute;top:-18px;left:50%;transform:translateX(-50%);width:28px;height:28px}
+.wand-tip::before{content:'✦';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:18px;color:#ffe8a0;text-shadow:0 0 12px rgba(212,166,60,.8),0 0 24px rgba(212,166,60,.4),0 0 40px rgba(255,200,80,.2);animation:wand-glow 2s ease-in-out infinite}
+.wand-tip::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:36px;height:36px;border-radius:50%;background:radial-gradient(circle,rgba(255,220,120,.15) 0%,transparent 70%);animation:wand-pulse 2s ease-in-out infinite alternate}
+.wand-orb1,.wand-orb2,.wand-orb3{position:absolute;width:4px;height:4px;border-radius:50%;background:#ffe8a0;box-shadow:0 0 6px rgba(212,166,60,.6)}
+.wand-orb1{animation:wand-orbit1 3s linear infinite}
+.wand-orb2{animation:wand-orbit2 3s linear infinite}
+.wand-orb3{animation:wand-orbit3 3s linear infinite}
+@keyframes wand-glow{0%,100%{opacity:.6;text-shadow:0 0 12px rgba(212,166,60,.6),0 0 24px rgba(212,166,60,.3)}50%{opacity:1;text-shadow:0 0 18px rgba(212,166,60,1),0 0 36px rgba(212,166,60,.5),0 0 50px rgba(255,200,80,.3)}}
+@keyframes wand-pulse{0%{transform:translate(-50%,-50%) scale(.8);opacity:.3}100%{transform:translate(-50%,-50%) scale(1.3);opacity:.6}}
+@keyframes wand-orbit1{0%{top:-4px;left:14px}25%{top:14px;left:28px}50%{top:32px;left:14px}75%{top:14px;left:-4px}100%{top:-4px;left:14px}}
+@keyframes wand-orbit2{0%{top:28px;left:-2px}25%{top:-2px;left:10px}50%{top:-2px;left:26px}75%{top:28px;left:26px}100%{top:28px;left:-2px}}
+@keyframes wand-orbit3{0%{top:14px;left:30px}25%{top:30px;left:18px}50%{top:14px;left:-4px}75%{top:-2px;left:18px}100%{top:14px;left:30px}}
+.wand-band{position:absolute;width:100%;height:6px;background:linear-gradient(90deg,transparent,rgba(212,166,60,.3),transparent);border-radius:2px}
+@keyframes wand-sparkle{0%,100%{opacity:.3;transform:translateX(-50%) scale(.8)}50%{opacity:1;transform:translateX(-50%) scale(1.2)}}
+.wand-hint{font-size:clamp(.65rem,1.8vw,.75rem);color:var(--text-dim);letter-spacing:.15em;opacity:0;transition:opacity 1.5s ease;font-style:italic}
+.wand-hint.visible{opacity:1}
+.magic-flash{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9998;pointer-events:none;background:radial-gradient(circle at var(--mx) var(--my),rgba(212,166,60,.4) 0%,rgba(212,166,60,.1) 30%,transparent 60%);opacity:0;animation:magic-spread 2s ease-out forwards}
+@keyframes magic-spread{0%{opacity:0;transform:scale(0)}20%{opacity:1;transform:scale(.5)}60%{opacity:.8;transform:scale(1.5)}100%{opacity:0;transform:scale(2)}}
+
+/* ===== GIFT BOX ===== */
+.gift-wrap{display:flex;flex-direction:column;align-items:center;gap:14px;margin:40px 0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.gift-box{width:70px;height:60px;position:relative}
+.gift-base{width:70px;height:42px;background:linear-gradient(135deg,#c04848,#e06060,#c04848);border-radius:4px;position:absolute;bottom:0;box-shadow:0 4px 16px rgba(0,0,0,.3),inset 0 -2px 4px rgba(0,0,0,.15)}
+.gift-base::after{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:12px;height:100%;background:linear-gradient(90deg,transparent,rgba(212,166,60,.5),rgba(212,166,60,.7),rgba(212,166,60,.5),transparent)}
+.gift-lid{width:76px;height:16px;background:linear-gradient(135deg,#d05050,#e87070,#d05050);border-radius:4px 4px 2px 2px;position:absolute;top:0;left:-3px;box-shadow:0 2px 8px rgba(0,0,0,.2);transition:transform .6s ease,opacity .6s ease}
+.gift-lid::after{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:14px;height:100%;background:linear-gradient(90deg,transparent,rgba(212,166,60,.5),rgba(212,166,60,.7),rgba(212,166,60,.5),transparent)}
+.gift-bow{position:absolute;top:-14px;left:50%;transform:translateX(-50%);width:36px;height:20px;z-index:2}
+.gift-bow::before,.gift-bow::after{content:'';position:absolute;top:2px;width:18px;height:14px;background:linear-gradient(135deg,#e8c86a,#d4a63c);border-radius:50%;box-shadow:0 0 8px rgba(212,166,60,.3)}
+.gift-bow::before{left:0;transform:rotate(-15deg)}
+.gift-bow::after{right:0;transform:rotate(15deg)}
+.gift-bow-knot{position:absolute;top:6px;left:50%;transform:translateX(-50%);width:10px;height:10px;background:#c89430;border-radius:50%;z-index:3;box-shadow:0 0 6px rgba(212,166,60,.4)}
+.gift-shine{position:absolute;top:8px;left:10px;width:8px;height:8px;background:rgba(255,255,255,.2);border-radius:50%;animation:gift-twinkle 2s ease-in-out infinite}
+@keyframes gift-twinkle{0%,100%{opacity:.2;transform:scale(.8)}50%{opacity:.5;transform:scale(1.2)}}
+.gift-box.opened .gift-lid{transform:translateY(-30px) rotate(-25deg);opacity:0}
+.gift-box.opened .gift-bow,.gift-box.opened .gift-bow-knot{transition:transform .6s ease,opacity .6s ease;transform:translateY(-30px) rotate(-25deg) translateX(-50%);opacity:0}
+.gift-hint{font-size:clamp(.65rem,1.8vw,.75rem);color:var(--text-dim);letter-spacing:.15em;opacity:0;transition:opacity 1.5s ease;font-style:italic}
+.gift-hint.visible{opacity:1}
+
+/* ===== FIREWORK ROCKET BUTTON ===== */
+.rocket-wrap{display:flex;flex-direction:column;align-items:center;gap:14px;margin:40px 0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.fw-rocket{width:22px;height:70px;position:relative}
+.fw-rocket-body{width:22px;height:46px;background:linear-gradient(180deg,#ff5070,#ff7060,#ffb040,#60d0ff,#a080ff);border-radius:8px 8px 3px 3px;position:relative;box-shadow:0 0 12px rgba(255,100,100,.2),0 0 20px rgba(100,200,255,.1)}
+.fw-rocket-body::before{content:'';position:absolute;top:-10px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:11px solid transparent;border-right:11px solid transparent;border-bottom:14px solid #ff5070}
+.fw-rocket-body::after{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:4px;height:100%;background:linear-gradient(180deg,rgba(255,255,255,.3),rgba(255,255,255,.05));border-radius:2px}
+.fw-rocket-stripe1,.fw-rocket-stripe2{position:absolute;width:100%;height:4px;border-radius:2px}
+.fw-rocket-stripe1{top:12px;background:rgba(255,255,255,.2)}
+.fw-rocket-stripe2{top:24px;background:rgba(255,255,255,.15)}
+.fw-rocket-fin-l,.fw-rocket-fin-r{position:absolute;bottom:-2px;width:8px;height:12px;background:linear-gradient(180deg,#ff7060,#d4a63c);border-radius:0 0 3px 3px}
+.fw-rocket-fin-l{left:-4px;transform:rotate(8deg)}
+.fw-rocket-fin-r{right:-4px;transform:rotate(-8deg)}
+.fw-rocket-fuse{width:3px;height:16px;margin:0 auto;background:linear-gradient(180deg,#8a7a68,#5a4a38);border-radius:1px;position:relative}
+.fw-rocket-fuse::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:8px;height:8px;border-radius:50%;background:radial-gradient(circle,#ffe080,#ff9040,transparent);animation:fuse-glow .5s ease-in-out infinite alternate;box-shadow:0 0 10px rgba(255,160,60,.6)}
+@keyframes fuse-glow{0%{transform:translateX(-50%) scale(.7);opacity:.5}100%{transform:translateX(-50%) scale(1.2);opacity:1}}
+.fw-rocket-sparks{position:absolute;bottom:-24px;left:50%;transform:translateX(-50%);width:6px;height:22px;background:linear-gradient(180deg,#ffe080,#ff9040,transparent);border-radius:50%;filter:blur(1.5px);animation:fuse-glow .3s ease-in-out infinite alternate}
+.rocket-hint{font-size:clamp(.65rem,1.8vw,.75rem);color:var(--text-dim);letter-spacing:.15em;opacity:0;transition:opacity 1.5s ease;font-style:italic}
+.rocket-hint.visible{opacity:1}
+.fw-rocket.launched{animation:rocket-launch 1.5s ease-in forwards}
+@keyframes rocket-launch{0%{transform:translateY(0)}100%{transform:translateY(-200vh);opacity:0}}
+@keyframes tail-flicker{0%{opacity:.5;height:10px}100%{opacity:1;height:16px}}
+
+/* ===== CLOUD INTERACTIVE ===== */
+.cloud-overlay{position:fixed;top:0;left:0;width:100%;height:100%;z-index:80;pointer-events:auto}
+.i-cloud{position:absolute;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform 1s ease,opacity 1s ease;filter:drop-shadow(0 4px 12px rgba(0,0,0,.3))}
+.i-cloud svg{width:100%;height:100%}
+.i-cloud.touched{transform:scale(1.15);opacity:.4;transition:transform .5s ease,opacity .8s ease}
+.cloud-hint{position:fixed;bottom:15%;left:50%;transform:translateX(-50%);font-size:clamp(.65rem,1.8vw,.75rem);color:var(--text-dim);letter-spacing:.15em;opacity:0;transition:opacity 1.5s ease;font-style:italic;z-index:81;text-align:center}
+.cloud-hint.visible{opacity:1}
+
+/* ===== BIRTHDAY CELEBRATION PAGE ===== */
+.hb-celebration{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;gap:20px}
+
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0s!important;transition-duration:0s!important}}
+</style>
+</head>
+<body>
+<div id="grain"></div>
+<div id="paper-tex"></div>
+<div id="vignette"></div>
+<canvas id="starCanvas"></canvas>
+<canvas id="particleCanvas"></canvas>
+<div id="app">
+  <div class="scene active" id="prologue"><div class="scene-scroll" id="prologue-scroll"></div></div>
+  <div class="scene" id="chapter1"><div class="scene-scroll" id="ch1-scroll">
+    <div class="ch-label" style="font-size:clamp(.5rem,1.4vw,.6rem);color:var(--text-dim);letter-spacing:.5em;text-transform:uppercase;font-weight:400;text-align:center">The Constellation of Gani</div>
+    <div style="height:12px"></div>
+    <div id="constellation-stage"></div>
+    <div style="height:16px"></div>
+    <div id="ch1-text" style="display:flex;flex-direction:column;align-items:center;gap:16px;min-height:80px"></div>
+    <div style="height:12px"></div>
+    <div id="ch1-interactive" style="display:none"></div>
+  </div></div>
+  <div class="scene" id="chapter5"><div class="scene-scroll" id="ch5-scroll">
+    <div id="ch5-content"></div>
+  </div></div>
+  <div class="scene" id="chapter6"><div class="scene-scroll" id="ch6-scroll">
+    <div style="height:16px"></div>
+    <div class="big-25" id="big25">25</div>
+    <div id="ch6-content"></div>
+  </div></div>
+  <div class="scene" id="chapter7"><div class="scene-scroll" id="ch7-scroll">
+    <div id="ch7-content"></div>
+  </div></div>
+  <div class="scene" id="chinnodu"><div class="scene-scroll" id="chinnodu-scroll"><div id="chinnodu-content"></div></div></div>
+  <div class="scene" id="finale"><div class="scene-scroll" id="finale-scroll"><div id="finale-content"></div></div></div>
+  <div class="scene" id="birthday"><div class="scene-scroll" id="birthday-scroll"><div id="birthday-content"></div></div></div>
+</div>
+<div class="popup-overlay" id="popup"><div class="popup-content" id="popup-inner"></div></div>
+<div class="progress-dots" id="progress-dots"></div>
+<button id="audio-btn" aria-label="Toggle music" title="Toggle music">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+</button>
+<!-- audio created dynamically via JS -->
+<script>
+// ============================================================
+// THE LITTLE UNIVERSE OF GANI — Puuung Edition
+// ============================================================
+const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+// ===== MULTI-DEPTH STARFIELD =====
+let starCanvas,sCtx;
+let starLayers=[[],[],[]],nebulae=[],starOpacity=0,starTarget=1;
+const dpr=()=>Math.min(devicePixelRatio||1,2);
+function resizeSC(){const d=dpr();starCanvas.width=innerWidth*d;starCanvas.height=innerHeight*d;starCanvas.style.width=innerWidth+'px';starCanvas.style.height=innerHeight+'px';sCtx.setTransform(d,0,0,d,0,0)}
+function createStars(){
+  starLayers=[[],[],[]];nebulae=[];const w=innerWidth,h=innerHeight;
+  // Layer 0: tiny distant pinpoints
+  for(let i=0;i<160;i++)starLayers[0].push({x:Math.random()*w,y:Math.random()*h,r:Math.random()*.6+.2,a:Math.random()*.25+.04,sp:Math.random()*.008+.002,ph:Math.random()*6.28,type:'dot'});
+  // Layer 1: medium soft glowing dots + occasional crosses
+  for(let i=0;i<40;i++)starLayers[1].push({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.2+.5,a:Math.random()*.35+.08,sp:Math.random()*.012+.003,ph:Math.random()*6.28,type:Math.random()>.85?'cross':'soft'});
+  // Layer 2: few larger painted stars with warm/cool tint
+  for(let i=0;i<8;i++)starLayers[2].push({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.8+1,a:Math.random()*.2+.1,sp:Math.random()*.006+.002,ph:Math.random()*6.28,type:'glow',hue:Math.random()>.5?'255,248,230':'212,200,240'});
+  // Nebula patches — painted atmospheric haze
+  for(let i=0;i<3;i++)nebulae.push({x:Math.random()*w,y:Math.random()*h,rx:Math.random()*200+100,ry:Math.random()*120+60,a:Math.random()*.015+.005,hue:['60,80,140','80,50,100','40,60,110'][i]});
+}
+function drawStars(t){
+  sCtx.clearRect(0,0,innerWidth,innerHeight);starOpacity+=(starTarget-starOpacity)*.012;
+  // Nebulae
+  nebulae.forEach(n=>{const g=sCtx.createRadialGradient(n.x,n.y,0,n.x,n.y,n.rx);g.addColorStop(0,`rgba(${n.hue},${n.a*starOpacity})`);g.addColorStop(.6,`rgba(${n.hue},${n.a*starOpacity*.3})`);g.addColorStop(1,'transparent');sCtx.beginPath();sCtx.ellipse(n.x,n.y,n.rx,n.ry,0,0,6.28);sCtx.fillStyle=g;sCtx.fill()});
+  // Stars
+  starLayers.forEach(layer=>layer.forEach(s=>{
+    const tw=Math.sin(t*s.sp+s.ph)*.35+.65,a=s.a*tw*starOpacity;if(a<.005)return;
+    if(s.type==='dot'){sCtx.fillStyle=`rgba(240,235,220,${a})`;sCtx.fillRect(s.x,s.y,s.r,s.r)}
+    else if(s.type==='soft'){const g=sCtx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r*2);g.addColorStop(0,`rgba(250,245,230,${a})`);g.addColorStop(1,'transparent');sCtx.beginPath();sCtx.arc(s.x,s.y,s.r*2,0,6.28);sCtx.fillStyle=g;sCtx.fill()}
+    else if(s.type==='cross'){sCtx.strokeStyle=`rgba(240,235,220,${a*.6})`;sCtx.lineWidth=.5;sCtx.beginPath();sCtx.moveTo(s.x-s.r*2,s.y);sCtx.lineTo(s.x+s.r*2,s.y);sCtx.stroke();sCtx.beginPath();sCtx.moveTo(s.x,s.y-s.r*2);sCtx.lineTo(s.x,s.y+s.r*2);sCtx.stroke();sCtx.fillStyle=`rgba(250,245,230,${a})`;sCtx.beginPath();sCtx.arc(s.x,s.y,s.r*.6,0,6.28);sCtx.fill()}
+    else if(s.type==='glow'){const g=sCtx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r*3);g.addColorStop(0,`rgba(${s.hue},${a})`);g.addColorStop(.3,`rgba(${s.hue},${a*.4})`);g.addColorStop(1,'transparent');sCtx.beginPath();sCtx.arc(s.x,s.y,s.r*3,0,6.28);sCtx.fillStyle=g;sCtx.fill()}
+  }));
+  requestAnimationFrame(drawStars);
+}
+
+// ===== FX CANVAS =====
+let pCanvas,pCtx;
+let particles=[];
+function resizePC(){const d=dpr();pCanvas.width=innerWidth*d;pCanvas.height=innerHeight*d;pCanvas.style.width=innerWidth+'px';pCanvas.style.height=innerHeight+'px';pCtx.setTransform(d,0,0,d,0,0)}
+function spawnP(x,y,n=18,c='212,166,60'){
+  for(let i=0;i<n;i++){const a=Math.random()*6.28,sp=Math.random()*1.8+.3;
+    particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-Math.random()*.8,r:Math.random()*2.2+.4,life:1,decay:Math.random()*.014+.005,c})}
+}
+function spawnBurst(x,y){spawnP(x,y,30,'212,166,60');spawnP(x,y,10,'255,220,150')}
+function drawP(){
+  pCtx.clearRect(0,0,innerWidth,innerHeight);
+  for(let i=particles.length-1;i>=0;i--){
+    const p=particles[i];p.x+=p.vx;p.y+=p.vy;p.vy+=.012;p.life-=p.decay;
+    if(p.life<=0){particles.splice(i,1);continue}
+    const r=p.r*p.life*1.8;
+    const grad=pCtx.createRadialGradient(p.x,p.y,0,p.x,p.y,r);
+    grad.addColorStop(0,`rgba(${p.c},${p.life*.6})`);
+    grad.addColorStop(.5,`rgba(${p.c},${p.life*.2})`);
+    grad.addColorStop(1,`rgba(${p.c},0)`);
+    pCtx.beginPath();pCtx.arc(p.x,p.y,r,0,6.28);pCtx.fillStyle=grad;pCtx.fill();
+  }
+  requestAnimationFrame(drawP);
+}
+
+// ===== SCENE MANAGEMENT =====
+const scenes=['prologue','chapter1','chapter5','chapter6','chapter7','chinnodu','finale','birthday'];
+let curScene=0;
+function showScene(id){
+  $$('.scene').forEach(s=>s.classList.remove('active'));
+  const t=$('#'+id);if(t){t.classList.add('active');t.scrollTop=0;const sc=t.querySelector('.scene-scroll');if(sc)sc.scrollTop=0}
+  curScene=scenes.indexOf(id);updateDots();
+  starTarget=1;
+}
+function nextScene(){if(curScene<scenes.length-1)showScene(scenes[curScene+1])}
+
+// ===== PROGRESS DOTS =====
+function buildDots(){const c=$('#progress-dots');scenes.forEach((s,i)=>{const d=document.createElement('div');d.className='progress-dot';d.addEventListener('click',()=>showScene(s));c.appendChild(d)})}
+function updateDots(){$$('.progress-dot').forEach((d,i)=>d.classList.toggle('active',i===curScene));$('#progress-dots').classList.toggle('visible',curScene>0)}
+
+// ===== POPUP =====
+function showPopup(html){$('#popup-inner').innerHTML=html+'<button class="popup-close" onclick="closePopup()">CLOSE</button>';$('#popup').classList.add('active')}
+function closePopup(){$('#popup').classList.remove('active')}
+
+// ===== HAPPINESS FLOAT =====
+function showHappy(x,y,txt='+10 HAPPINESS'){const el=document.createElement('div');el.className='happiness-float';el.textContent=txt;el.style.left=x+'px';el.style.top=y+'px';document.body.appendChild(el);setTimeout(()=>el.remove(),1800)}
+
+// ===== METEOR ANIMATION =====
+async function animateMeteor(fadeSelector){
+  return new Promise(resolve=>{
+    // Fade text if selector provided
+    if(fadeSelector){
+      const els=document.querySelectorAll(fadeSelector);
+      els.forEach(el=>{el.style.transition='opacity 2s ease';el.style.opacity='.15'});
+    }
+    const w=innerWidth,h=innerHeight;let f=0;const total=200;
+    function step(){
+      if(f>=total){resolve();return}
+      const t=f/total;
+      const mx=w*(1-t*.92)-10;
+      const my=h*.12+Math.sin(t*Math.PI*1.2)*(h*.12)+Math.sin(t*Math.PI*3)*(h*.015);
+      // Main trail — bright golden
+      if(f%2===0)spawnP(mx,my,3,'255,230,160');
+      // Shimmer particles — scattered wider
+      if(f%3===0)spawnP(mx+Math.random()*20-10,my+Math.random()*16-8,2,'212,166,60');
+      // Blue-white twinkle
+      if(f%5===0)spawnP(mx+Math.random()*12-6,my+Math.random()*12-6,1,'180,200,240');
+      // Bright core
+      if(f%4===0)spawnP(mx,my,2,'255,255,240');
+      f++;requestAnimationFrame(step);
+    }
+    step();
+  });
+}
+
+// ============================================================
+// PROLOGUE
+// ============================================================
+async function startPrologue(){
+  const sc=$('#prologue-scroll');sc.innerHTML='';
+  await sleep(1800);
+  const dt=document.createElement('div');dt.className='narration';dt.style.cssText='color:var(--text-dim);letter-spacing:.35em;font-size:.78rem';dt.textContent='22 August 2001';sc.appendChild(dt);
+  await sleep(200);dt.classList.add('visible');await sleep(2500);
+  const lines=['Something happened.','A tiny human appeared on Earth.','And somehow...','the world became a little more interesting.','<em>Gani arrived.</em>','And apparently,','the Earth got a little better that day.'];
+  for(const l of lines){const p=document.createElement('div');p.className='narration';p.innerHTML=l;sc.appendChild(p);await sleep(350);p.classList.add('visible');await sleep(2000)}
+  await sleep(1500);
+  await animateMeteor('#prologue-scroll .narration');
+  await sleep(800);
+  showScene('chapter1');
+}
+
+// ============================================================
+// THE CONSTELLATION OF GANI (replaces Ch 1-4)
+// ============================================================
+let cStep=0;
+const cData=[
+  {label:'Shy',text:'Sometimes you want something...<br>but asking for it becomes the hardest thing.<br><br>And when you finally ask...<br><em>it\'s ridiculously cute.</em>'},
+  {label:'What were you like as a kid?',text:'<span style="color:var(--peach);font-style:italic;font-size:.88rem">"What were you like as a kid?"</span><br><br>I don\'t know yet.<br><em>Maybe someday you\'ll tell me.</em>'},
+  {label:'Caring',text:'You don\'t always look like you care.<br>That\'s the funny thing.<br><br>You notice. You remember. You show up.<br><em>You care.</em>'},
+  {label:'What makes you genuinely happy?',text:'<span style="color:var(--peach);font-style:italic;font-size:.88rem">"What makes you genuinely happy?"</span><br><br>I don\'t know yet.<br><em>But I\'d like to find out.</em>'},
+  {label:'Mysterious',text:'There are approximately 847 things<br>I still don\'t understand about you.<br><br><em>Gani remains mysterious.</em>'},
+  {label:'What kind of person do you want to become?',text:'<span style="color:var(--peach);font-style:italic;font-size:.88rem">"What kind of person do you want to become?"</span><br><br>I don\'t know yet.<br><em>But I think you\'re becoming someone good.</em>'},
+  {label:'Soft',text:'You\'re softer than you pretend to be.<br><br><em>I hope you never lose that.</em>'},
+  {label:'Sensitive',text:'You feel things more deeply<br>than you let people see.'},
+  {label:'Handsome',text:'<em>Handsome.</em><br><br>This section is objectively correct.<br>No further investigation required.'},
+];
+// Star positions forming a symmetric heart shape (9 stars)
+// Tap order: bottom tip → left side up → top-left → top-right → right side down
+const cPos=[
+  [50,90],
+  [32,74],[16,52],[14,30],[28,14],
+  [72,14],[86,30],[84,52],[68,74]
+];
+// Heart connection map: which star connects to which when revealed
+const cLines=[[],[0],[1],[2],[3],[4],[5],[6],[7,0]];
+
+function initCh1(){
+  const stage=$('#constellation-stage');const textBox=$('#ch1-text');const sc=$('#ch1-scroll');
+  stage.innerHTML='';textBox.innerHTML='';cStep=0;
+  // Moon & clouds background
+  stage.insertAdjacentHTML('beforeend','<div class="c-cloud"></div><div class="c-cloud"></div><div class="c-cloud"></div>');
+  // SVG for connecting lines
+  const lineSvg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  lineSvg.setAttribute('viewBox','0 0 100 100');lineSvg.setAttribute('class','cline');
+  lineSvg.style.cssText='position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none';
+  stage.appendChild(lineSvg);
+  // Create stars
+  cPos.forEach((p,i)=>{
+    const star=document.createElement('div');star.className='cstar'+(i===0?' waiting':'');
+    star.style.left=p[0]+'%';star.style.top=p[1]+'%';star.dataset.idx=i;
+    const shortLabel=cData[i].label.length>18?cData[i].label.substring(0,16)+'…':cData[i].label;
+    star.innerHTML='<div class="cstar-dot"></div><div class="cstar-label">'+shortLabel+'</div>';
+    if(i>0){star.style.opacity='0';star.style.pointerEvents='none'}
+    star.addEventListener('click',()=>revealStar(i,stage,textBox,lineSvg,sc));
+    stage.appendChild(star);
+  });
+  // Initial hint
+  const hint=document.createElement('div');hint.className='narration visible';hint.style.cssText='font-size:.72rem;color:var(--text-dim)';
+  hint.textContent='Tap the glowing star.';textBox.appendChild(hint);
+}
+
+async function revealStar(idx,stage,textBox,lineSvg,sc){
+  if(idx!==cStep)return;
+  const allStars=[...stage.querySelectorAll('.cstar')];
+  const cur=allStars[idx];
+  // Reveal current star
+  cur.classList.remove('waiting');cur.classList.add('revealed');cur.style.pointerEvents='none';
+  const r=cur.getBoundingClientRect();
+  spawnP(r.left+r.width/2,r.top+r.height/2,8);
+  // Draw lines from connection map
+  if(cLines[idx]&&cLines[idx].length){
+    cLines[idx].forEach(from=>{
+      const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('x1',cPos[from][0]);line.setAttribute('y1',cPos[from][1]);
+      line.setAttribute('x2',cPos[idx][0]);line.setAttribute('y2',cPos[idx][1]);
+      line.style.opacity='0';lineSvg.appendChild(line);
+      setTimeout(()=>line.style.opacity='1',100);
+    });
+  }
+  // Show text
+  textBox.innerHTML='';
+  const narDiv=document.createElement('div');narDiv.className='narration';narDiv.innerHTML=cData[idx].text;
+  textBox.appendChild(narDiv);
+  await sleep(200);narDiv.classList.add('visible');sc.scrollTop=sc.scrollHeight;
+  cStep++;
+  // Activate next star or show continue
+  if(cStep<cData.length){
+    await sleep(1800);
+    const next=allStars[cStep];
+    next.style.opacity='1';next.style.pointerEvents='auto';next.classList.add('waiting');
+    // Hint text
+    const hint=document.createElement('div');hint.className='narration visible';hint.style.cssText='font-size:.72rem;color:var(--text-dim);margin-top:8px';
+    hint.textContent='Tap the next star.';textBox.appendChild(hint);
+    sc.scrollTop=sc.scrollHeight;
+  }else{
+    await sleep(2000);
+    // Final constellation text
+    textBox.innerHTML='';
+    const fin=document.createElement('div');fin.className='narration';
+    fin.innerHTML='There are still so many things I don\'t know about you.<br><br>And somehow...<br><br><em>that\'s nice.</em><br><br>There are still things left to discover.';
+    textBox.appendChild(fin);await sleep(300);fin.classList.add('visible');
+    await sleep(1500);
+    // Light up entire constellation
+    allStars.forEach(s=>{s.classList.remove('done');s.classList.add('revealed');s.style.opacity='1'});
+    spawnBurst(innerWidth/2,innerHeight/2);
+    await sleep(1200);
+
+    // Touch a glowing star to continue
+    await sleep(500);
+    // Pick a random star and make it glow brightly
+    const glowIdx=Math.floor(Math.random()*allStars.length);
+    const glowStar=allStars[glowIdx];
+    glowStar.style.pointerEvents='auto';glowStar.style.cursor='pointer';
+    glowStar.classList.add('waiting');
+    glowStar.style.filter='drop-shadow(0 0 16px rgba(212,166,60,.8)) drop-shadow(0 0 30px rgba(212,166,60,.4))';
+    glowStar.style.transform='scale(1.4)';glowStar.style.transition='transform 1s ease, filter 1s ease';
+
+    const iw=$('#ch1-interactive');iw.style.display='';iw.innerHTML='';
+    const gHint=document.createElement('div');gHint.className='narration';gHint.style.cssText='font-size:.72rem;color:var(--text-dim);opacity:0;transition:opacity 1.2s ease;text-align:center';
+    gHint.textContent='Touch the glowing star...';iw.appendChild(gHint);
+    await sleep(400);gHint.style.opacity='1';sc.scrollTop=sc.scrollHeight;
+
+    glowStar.addEventListener('click',()=>{
+      const r=glowStar.getBoundingClientRect();
+      spawnBurst(r.left+r.width/2,r.top+r.height/2);
+      glowStar.style.transform='scale(2)';glowStar.style.opacity='0';
+      gHint.style.opacity='0';
+      // Flash all stars briefly
+      allStars.forEach(s=>{const sr=s.getBoundingClientRect();spawnP(sr.left+sr.width/2,sr.top+sr.height/2,3)});
+      setTimeout(()=>{showScene('chapter5');initCh5()},1500);
+    },{once:true});
+  }
+}
+
+// ============================================================
+// CHAPTER 5 — THE THINGS YOU DON'T SEE
+// ============================================================
+async function initCh5(){
+  const content=$('#ch5-content'),sc=$('#ch5-scroll');content.innerHTML='';
+  const lines=['There are things about yourself you probably don\'t notice.','You\'re softer than you think.','You\'re more caring than you show.','You\'re more sensitive than you let people see.','You have a quiet way of making your presence felt.','There\'s something comforting about you.','','Maybe you don\'t see these things.','<em>But they\'re there.</em>'];
+  for(const l of lines){if(l===''){await sleep(1500);continue}const p=document.createElement('div');p.className='narration';p.innerHTML=l;content.appendChild(p);await sleep(400);p.classList.add('visible');await sleep(2200)}
+  await sleep(1500);
+  // Spacer before candle
+  const spacer=document.createElement('div');spacer.style.height='60px';content.appendChild(spacer);
+  // Interactive candle
+  const cw=document.createElement('div');cw.className='candle-wrap';cw.style.cssText='opacity:0;transition:opacity 1.2s ease';
+  cw.innerHTML='<div class="candle"><div class="candle-flame"></div><div class="candle-glow"></div><div class="candle-smoke"></div><div class="candle-stripe" style="top:25%"></div><div class="candle-stripe" style="top:50%"></div><div class="candle-stripe" style="top:75%"></div></div>';
+  const wish=document.createElement('div');wish.className='candle-hint';wish.textContent='Make a wish...';wish.style.cssText='font-size:clamp(.75rem,2vw,.85rem);color:var(--cream-soft);letter-spacing:.12em';
+  cw.appendChild(wish);content.appendChild(cw);
+  await sleep(300);cw.style.opacity='1';sc.scrollTop=sc.scrollHeight;await sleep(600);wish.classList.add('visible');
+  await sleep(2500);
+  wish.style.transition='opacity 1.5s ease';wish.style.opacity='0';
+  await sleep(1500);wish.remove();
+  const hint=document.createElement('div');hint.className='candle-hint';hint.textContent='Now blow out the candle...';
+  cw.appendChild(hint);await sleep(300);hint.classList.add('visible');
+  cw.addEventListener('click',()=>{
+    cw.querySelector('.candle').classList.add('candle-blown');
+    hint.classList.remove('visible');hint.style.opacity='0';
+    const r=cw.getBoundingClientRect();spawnBurst(r.left+r.width/2,r.top);
+    setTimeout(()=>{showScene('chapter6');initCh6()},2000);
+  },{once:true});
+}
+
+// ============================================================
+// CHAPTER 6 — 25
+// ============================================================
+async function initCh6(){
+  const content=$('#ch6-content'),sc=$('#ch6-scroll');content.innerHTML='';
+  $('#big25').style.opacity='1';await sleep(1500);
+  async function addN(t,em=false){const p=document.createElement('div');p.className='narration';p.innerHTML=em?'<em>'+t+'</em>':t;content.appendChild(p);await sleep(300);p.classList.add('visible');sc.scrollTop=sc.scrollHeight;await sleep(2200)}
+
+  await addN('25 years.');
+  await addN('25 years of becoming the person you are today.');
+  await sleep(1200);
+  await addN('I wasn\'t there for most of them.');
+  await addN('I don\'t know the little stories.');
+  await addN('The childhood jokes.');
+  await addN('The things you were obsessed with.');
+  await addN('The things you dreamed about.');
+  await sleep(1200);
+  await addN('I only know the Gani I\'ve met.',true);
+  await sleep(1500);
+  await addN('And I\'m pretty glad I got to meet him.',true);
+  await sleep(2000);
+  await addN('But here\'s something I\'ve noticed...');
+  await sleep(1200);
+
+  // Spacer — starry sky area where butterfly descends
+  const spacer=document.createElement('div');spacer.style.height='60px';content.appendChild(spacer);
+
+  // Butterfly descends slowly from above, then floats gently
+  const bw=document.createElement('div');bw.className='butterfly-wrap';bw.style.cssText='height:180px;margin:0';
+  bw.innerHTML='<div class="butterfly bf-descend"><svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g class="bf-l" style="transform-origin:30px 30px"><path class="bf-wing" d="M30 30 Q15 10 5 20 Q-2 28 10 35 Q18 40 30 30Z"/><path class="bf-wing-inner" d="M30 30 Q20 18 12 24 Q8 28 15 33 Q22 36 30 30Z"/></g><g class="bf-r" style="transform-origin:30px 30px"><path class="bf-wing" d="M30 30 Q45 10 55 20 Q62 28 50 35 Q42 40 30 30Z"/><path class="bf-wing-inner" d="M30 30 Q40 18 48 24 Q52 28 45 33 Q38 36 30 30Z"/></g><ellipse cx="30" cy="30" rx="1.5" ry="8" fill="rgba(150,120,60,.8)"/><line x1="28" y1="22" x2="24" y2="16" stroke="rgba(150,120,60,.6)" stroke-width="0.8"/><line x1="32" y1="22" x2="36" y2="16" stroke="rgba(150,120,60,.6)" stroke-width="0.8"/></svg></div>';
+  content.appendChild(bw);sc.scrollTop=sc.scrollHeight;
+  // After descend finishes, switch to gentle floating
+  const bf=bw.querySelector('.butterfly');
+  bf.addEventListener('animationend',()=>{bf.classList.remove('bf-descend');bf.classList.add('bf-floating')},{once:true});
+  await sleep(4200);
+
+  const bHint=document.createElement('div');bHint.className='bf-hint';bHint.textContent='Catch the butterfly...';
+  bw.appendChild(bHint);await sleep(300);bHint.classList.add('visible');
+
+  bw.querySelector('.butterfly').addEventListener('click',()=>{
+    const bf=bw.querySelector('.butterfly');bf.classList.add('caught');
+    bHint.classList.remove('visible');bHint.style.opacity='0';
+    const r=bf.getBoundingClientRect();spawnBurst(r.left+r.width/2,r.top+r.height/2);
+    setTimeout(()=>{showScene('chapter7');initCh7()},2000);
+  },{once:true});
+}
+
+// ============================================================
+// CHAPTER 7 — THE LITTLE MAGIC
+// ============================================================
+async function initCh7(){
+  const content=$('#ch7-content'),sc=$('#ch7-scroll');content.innerHTML='';
+  async function addN(t,em=false){const p=document.createElement('div');p.className='narration';p.innerHTML=em?'<em>'+t+'</em>':t;content.appendChild(p);await sleep(300);p.classList.add('visible');sc.scrollTop=sc.scrollHeight;await sleep(2000)}
+
+  await addN('You know what\'s strange?');await addN('Before I met you,');await addN('these were just ordinary things.');await addN('Ordinary days.<br>Ordinary evenings.');await addN('Nothing particularly magical about them.');
+  await sleep(1200);spawnP(innerWidth/2,innerHeight/2,5);
+  await addN('And then you came along.',true);spawnP(innerWidth/2,innerHeight/2,15);await sleep(800);
+  await addN('Somehow, your presence started finding its way into the smallest parts of my world.');
+  await addN('Knowing you\'re somewhere out there...');
+  await addN('somehow makes the world feel a little less ordinary.',true);
+  await sleep(1200);
+  await addN('You didn\'t have to do anything extraordinary.');
+  await addN('You just had to be you.',true);
+  spawnP(innerWidth/2,innerHeight/2,25);await sleep(800);
+  await addN('And somehow...');
+  await addN('things became a little more magical.',true);
+  await sleep(1500);
+
+  // Spacer before wand
+  const spacer=document.createElement('div');spacer.style.height='50px';content.appendChild(spacer);
+
+  // Magic wand instead of continue
+  const ww=document.createElement('div');ww.className='wand-wrap';ww.style.cssText='opacity:0;transition:opacity 1.2s ease';
+  ww.innerHTML='<div class="wand"><div class="wand-tip"><div class="wand-orb1"></div><div class="wand-orb2"></div><div class="wand-orb3"></div></div><div class="wand-band" style="top:10px"></div><div class="wand-band" style="top:20px"></div></div>';
+  const wHint=document.createElement('div');wHint.className='wand-hint';wHint.textContent='Hold the wand...';
+  ww.appendChild(wHint);content.appendChild(ww);
+  await sleep(300);ww.style.opacity='1';sc.scrollTop=sc.scrollHeight;await sleep(800);wHint.classList.add('visible');
+
+  ww.addEventListener('click',(e)=>{
+    wHint.classList.remove('visible');wHint.style.opacity='0';
+    const r=ww.getBoundingClientRect();
+    const mx=r.left+r.width/2,my=r.top+r.height/4;
+    // Spawn lots of magic particles
+    for(let i=0;i<6;i++)setTimeout(()=>spawnBurst(mx+Math.random()*80-40,my+Math.random()*60-30),i*150);
+    // Magic flash from wand tip
+    const flash=document.createElement('div');flash.className='magic-flash';
+    flash.style.setProperty('--mx',mx+'px');flash.style.setProperty('--my',my+'px');
+    document.body.appendChild(flash);
+    setTimeout(()=>flash.remove(),2200);
+    setTimeout(()=>{showScene('chinnodu');initChinnodu()},2200);
+  },{once:true});
+}
+
+// ============================================================
+// CHINNODU PHONE MOMENT
+// ============================================================
+async function initChinnodu(){
+  const content=$('#chinnodu-content'),sc=$('#chinnodu-scroll');content.innerHTML='';
+  async function addN(t,em=false){const p=document.createElement('div');p.className='narration';p.innerHTML=em?'<em>'+t+'</em>':t;content.appendChild(p);await sleep(300);p.classList.add('visible');sc.scrollTop=sc.scrollHeight;await sleep(2000)}
+
+  const phoneDiv=document.createElement('div');phoneDiv.style.margin='20px 0';
+  phoneDiv.innerHTML='<div class="phone-body" id="chin-phone"><div class="phone-notch"></div><div class="phone-notification" id="chin-notif"><div class="notif-contact">Chinnodu</div><div class="notif-message">new message</div></div></div>';
+  content.appendChild(phoneDiv);
+  await sleep(1000);
+
+  const phone=$('#chin-phone');phone.classList.add('phone-vibrating');
+  await sleep(1500);
+
+  phone.style.boxShadow='0 0 40px rgba(232,184,74,.08)';
+  const notif=$('#chin-notif');notif.classList.add('visible');
+  spawnP(innerWidth/2,innerHeight/2-50,8);
+  await sleep(2000);
+
+  await addN('See?');
+  await addN('Sometimes it\'s something this small.');
+  await addN('A name appearing on my screen.');
+  await addN('A message.');
+  await addN('A little notification.');
+  await addN('And suddenly...');
+  await addN('my world feels brighter.',true);
+  await sleep(1200);
+
+  spawnBurst(innerWidth/2,innerHeight/2-100);
+  await addN('That\'s what your presence does to my world, Gani.',true);
+  await sleep(1500);
+
+  // Spacer before gift box
+  const spacer=document.createElement('div');spacer.style.height='50px';content.appendChild(spacer);
+
+  // Gift box instead of continue
+  const gw=document.createElement('div');gw.className='gift-wrap';gw.style.cssText='opacity:0;transition:opacity 1.2s ease';
+  gw.innerHTML='<div class="gift-box"><div class="gift-base"><div class="gift-shine"></div></div><div class="gift-lid"></div><div class="gift-bow"></div><div class="gift-bow-knot"></div></div>';
+  const gHint=document.createElement('div');gHint.className='gift-hint';gHint.textContent='Open the gift...';
+  gw.appendChild(gHint);content.appendChild(gw);
+  await sleep(300);gw.style.opacity='1';sc.scrollTop=sc.scrollHeight;await sleep(800);gHint.classList.add('visible');
+
+  gw.addEventListener('click',()=>{
+    gw.querySelector('.gift-box').classList.add('opened');
+    gHint.classList.remove('visible');gHint.style.opacity='0';
+    const r=gw.getBoundingClientRect();
+    spawnBurst(r.left+r.width/2,r.top);
+    setTimeout(()=>spawnBurst(r.left+r.width/2,r.top+r.height/3),300);
+    setTimeout(()=>{showScene('finale');initFinale()},1500);
+  },{once:true});
+}
+
+// ============================================================
+// FINALE
+// ============================================================
+async function initFinale(){
+  const content=$('#finale-content'),sc=$('#finale-scroll');content.innerHTML='';
+  async function addN(t,em=false){const p=document.createElement('div');p.className='narration';p.innerHTML=em?'<em>'+t+'</em>':t;content.appendChild(p);await sleep(300);p.classList.add('visible');sc.scrollTop=sc.scrollHeight;await sleep(2000)}
+
+  spawnP(innerWidth*.8,50,18);await sleep(500);spawnP(innerWidth*.6,80,12);await sleep(500);spawnP(innerWidth*.4,60,8);
+  await sleep(1000);
+
+  await addN('Maybe the world didn\'t actually change that day.');
+  await addN('But it feels a little more magical knowing you exist in it.',true);
+  await sleep(1500);
+  await addN('So today...');
+  await addN('I hope 25 is kind to you.',true);
+  await sleep(1200);
+
+  const wishes=['Lots of chocolate. 🍫','Great movies and series. 🎬','Ridiculously fun games. 🎮','Very, very good food. 🍜','Many reasons to celebrate. ✨','Quiet days when you need them. 🌙','And countless little things that make you happy.'];
+  for(const w of wishes){const d=document.createElement('div');d.className='narration';d.innerHTML='<em>'+w+'</em>';d.style.fontSize='clamp(.86rem,2.8vw,1.02rem)';content.appendChild(d);await sleep(350);d.classList.add('visible');sc.scrollTop=sc.scrollHeight;await sleep(1300)}
+
+  await sleep(1500);
+  await addN('I don\'t know what the next chapters will look like.');
+  await addN('And we don\'t need to know yet.');
+  await addN('Today is simply about celebrating you.');
+  await addN('The person you are.');
+  await addN('The person you\'re becoming.');
+  await addN('And the magic your presence brings with it.',true);
+  await sleep(2000);
+
+  // Spacer before rocket
+  const spacer=document.createElement('div');spacer.style.height='50px';content.appendChild(spacer);
+
+  // Firework rocket instead of continue
+  const rk=document.createElement('div');rk.className='rocket-wrap';rk.style.cssText='opacity:0;transition:opacity 1.2s ease';
+  rk.innerHTML='<div class="fw-rocket"><div class="fw-rocket-body"><div class="fw-rocket-stripe1"></div><div class="fw-rocket-stripe2"></div></div><div class="fw-rocket-fin-l"></div><div class="fw-rocket-fin-r"></div><div class="fw-rocket-fuse"></div><div class="fw-rocket-sparks"></div></div>';
+  const rkHint=document.createElement('div');rkHint.className='rocket-hint';rkHint.textContent='Light the firework...';
+  rk.appendChild(rkHint);content.appendChild(rk);
+  await sleep(300);rk.style.opacity='1';sc.scrollTop=sc.scrollHeight;await sleep(800);rkHint.classList.add('visible');
+
+  rk.addEventListener('click',()=>{
+    rk.querySelector('.fw-rocket').classList.add('launched');
+    rkHint.classList.remove('visible');rkHint.style.opacity='0';
+    const r=rk.getBoundingClientRect();spawnBurst(r.left+r.width/2,r.top);
+    setTimeout(()=>{showScene('birthday');initBirthday()},1800);
+  },{once:true});
+}
+
+// ============================================================
+// BIRTHDAY CELEBRATION — HB + Fireworks
+// ============================================================
+async function initBirthday(){
+  const content=$('#birthday-content'),sc=$('#birthday-scroll');content.innerHTML='';
+
+  await sleep(800);
+  const wrap=document.createElement('div');wrap.className='hb-celebration';content.appendChild(wrap);
+
+  const hb=document.createElement('div');hb.className='hb-special';hb.innerHTML='Happy Birthday,<em>Gani</em>';
+  wrap.appendChild(hb);await sleep(500);hb.style.opacity='1';
+
+  // Launch fireworks
+  startFireworks();
+
+  spawnBurst(innerWidth/2,innerHeight/2);await sleep(500);spawnBurst(innerWidth/2-60,innerHeight/2+40);await sleep(400);spawnBurst(innerWidth/2+60,innerHeight/2-30);
+  await sleep(3000);
+
+  await animateMeteor();
+  await sleep(1500);
+
+  const star=document.createElement('div');star.className='final-star';star.style.cssText='opacity:0;transition:opacity 3s ease';wrap.appendChild(star);
+  await sleep(300);star.style.opacity='1';
+}
+
+// ============================================================
+// FIREWORKS
+// ============================================================
+function startFireworks(){
+  const c=document.createElement('canvas');c.className='firework-canvas';
+  document.body.appendChild(c);
+  const ctx=c.getContext('2d');
+  function resize(){c.width=innerWidth;c.height=innerHeight}
+  resize();window.addEventListener('resize',resize);
+  const rockets=[],sparks=[];
+  const colors=['#d4a63c','#ffe8a0','#ff9060','#ff6090','#60d0ff','#a080ff','#80ff90','#ffffff'];
+  function launchRocket(){
+    rockets.push({
+      x:Math.random()*innerWidth*.6+innerWidth*.2,
+      y:innerHeight,
+      tx:Math.random()*innerWidth*.6+innerWidth*.2,
+      ty:Math.random()*innerHeight*.3+innerHeight*.1,
+      speed:3+Math.random()*2,trail:[]
+    });
+  }
+  function explode(x,y){
+    const col=colors[Math.floor(Math.random()*colors.length)];
+    const n=40+Math.floor(Math.random()*30);
+    for(let i=0;i<n;i++){
+      const a=Math.PI*2*i/n+Math.random()*.3;
+      const v=2+Math.random()*4;
+      sparks.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:1,decay:.008+Math.random()*.008,col,r:1.5+Math.random()*1.5});
+    }
+  }
+  let fwFrame=0;
+  function drawFW(){
+    ctx.clearRect(0,0,c.width,c.height);
+    for(let i=rockets.length-1;i>=0;i--){
+      const r=rockets[i];
+      const dx=r.tx-r.x,dy=r.ty-r.y,d=Math.sqrt(dx*dx+dy*dy);
+      if(d<r.speed*2){explode(r.x,r.y);rockets.splice(i,1);continue}
+      r.x+=dx/d*r.speed;r.y+=dy/d*r.speed;
+    }
+    for(let i=sparks.length-1;i>=0;i--){
+      const s=sparks[i];s.x+=s.vx;s.y+=s.vy;s.vy+=.04;s.vx*=.99;s.life-=s.decay;
+      if(s.life<=0){sparks.splice(i,1);continue}
+      ctx.globalAlpha=s.life;ctx.beginPath();ctx.arc(s.x,s.y,s.r*s.life,0,6.28);ctx.fillStyle=s.col;ctx.fill();
+    }
+    ctx.globalAlpha=1;
+    fwFrame++;
+    if(fwFrame<600)requestAnimationFrame(drawFW);
+    else{c.remove()}
+  }
+  let launches=0;
+  function wave(){
+    if(launches>=20)return;
+    const n=2+Math.floor(Math.random()*3);
+    for(let i=0;i<n;i++)setTimeout(launchRocket,i*200);
+    launches+=n;
+    setTimeout(wave,800+Math.random()*1200);
+  }
+  wave();
+  requestAnimationFrame(drawFW);
+}
+
+// ============================================================
+// AUDIO — Local MP3
+// ============================================================
+let audioPlaying=false,bgmAudio=null;
+const MUTE_SVG='<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>';
+const PLAY_SVG='<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>';
+
+function startBGM(){
+  if(audioPlaying)return;
+  if(!bgmAudio){
+    bgmAudio=new Audio('bgm.mp3');
+    bgmAudio.loop=true;
+    bgmAudio.volume=1.0;
+  }
+  var p=bgmAudio.play();
+  if(p&&p.then)p.then(function(){
+    audioPlaying=true;
+    var btn=document.getElementById('audio-btn');
+    if(btn){btn.classList.add('playing');btn.querySelector('svg').innerHTML=MUTE_SVG}
+  }).catch(function(){});
+}
+function toggleAudio(){
+  var btn=document.getElementById('audio-btn');
+  if(!bgmAudio){bgmAudio=new Audio('bgm.mp3');bgmAudio.loop=true;bgmAudio.volume=1.0}
+  if(audioPlaying){
+    bgmAudio.pause();
+    audioPlaying=false;
+    btn.classList.remove('playing');
+    btn.querySelector('svg').innerHTML=PLAY_SVG;
+  }else{
+    startBGM();
+  }
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function init(){
+  // Audio: use capture phase to intercept ALL clicks before anything else
+  document.addEventListener('click',startBGM,{capture:true,once:true});
+  document.addEventListener('touchstart',startBGM,{capture:true,once:true});
+  document.getElementById('audio-btn').addEventListener('click',toggleAudio);
+  // Canvas & scene setup
+  starCanvas=$('#starCanvas');sCtx=starCanvas.getContext('2d');
+  pCanvas=$('#particleCanvas');pCtx=pCanvas.getContext('2d');
+  resizeSC();resizePC();createStars();
+  requestAnimationFrame(drawStars);requestAnimationFrame(drawP);
+  buildDots();updateDots();initCh1();
+  window.addEventListener('resize',()=>{resizeSC();resizePC();createStars()});
+  startPrologue();
+}
+window.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>
