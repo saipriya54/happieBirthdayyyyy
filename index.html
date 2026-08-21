@@ -691,6 +691,9 @@ async function revealStar(idx,stage,textBox,lineSvg,sc){
 
     // Touch a glowing star to continue
     await sleep(500);
+    // Hide the text area to avoid overlap
+    textBox.style.transition='opacity 1s ease';textBox.style.opacity='0';
+    await sleep(600);textBox.style.display='none';
     // Pick a random star and make it glow brightly
     const glowIdx=Math.floor(Math.random()*allStars.length);
     const glowStar=allStars[glowIdx];
@@ -702,7 +705,7 @@ async function revealStar(idx,stage,textBox,lineSvg,sc){
     const iw=$('#ch1-interactive');iw.style.display='';iw.innerHTML='';
     const gHint=document.createElement('div');gHint.className='narration';gHint.style.cssText='font-size:.72rem;color:var(--text-dim);opacity:0;transition:opacity 1.2s ease;text-align:center';
     gHint.textContent='Touch the glowing star...';iw.appendChild(gHint);
-    await sleep(400);gHint.style.opacity='1';sc.scrollTop=sc.scrollHeight;
+    await sleep(400);gHint.style.opacity='1';gHint.scrollIntoView({behavior:'smooth',block:'center'});
 
     glowStar.addEventListener('click',()=>{
       const r=glowStar.getBoundingClientRect();
@@ -731,7 +734,7 @@ async function initCh5(){
   cw.innerHTML='<div class="candle"><div class="candle-flame"></div><div class="candle-glow"></div><div class="candle-smoke"></div><div class="candle-stripe" style="top:25%"></div><div class="candle-stripe" style="top:50%"></div><div class="candle-stripe" style="top:75%"></div></div>';
   const wish=document.createElement('div');wish.className='candle-hint';wish.textContent='Make a wish...';wish.style.cssText='font-size:clamp(.75rem,2vw,.85rem);color:var(--cream-soft);letter-spacing:.12em';
   cw.appendChild(wish);content.appendChild(cw);
-  await sleep(300);cw.style.opacity='1';sc.scrollTop=sc.scrollHeight;await sleep(600);wish.classList.add('visible');
+  await sleep(300);cw.style.opacity='1';cw.scrollIntoView({behavior:'smooth',block:'center'});await sleep(600);wish.classList.add('visible');
   await sleep(2500);
   wish.style.transition='opacity 1.5s ease';wish.style.opacity='0';
   await sleep(1500);wish.remove();
@@ -775,7 +778,7 @@ async function initCh6(){
   // Butterfly descends slowly from above, then floats gently
   const bw=document.createElement('div');bw.className='butterfly-wrap';bw.style.cssText='height:180px;margin:0';
   bw.innerHTML='<div class="butterfly bf-descend"><svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g class="bf-l" style="transform-origin:30px 30px"><path class="bf-wing" d="M30 30 Q15 10 5 20 Q-2 28 10 35 Q18 40 30 30Z"/><path class="bf-wing-inner" d="M30 30 Q20 18 12 24 Q8 28 15 33 Q22 36 30 30Z"/></g><g class="bf-r" style="transform-origin:30px 30px"><path class="bf-wing" d="M30 30 Q45 10 55 20 Q62 28 50 35 Q42 40 30 30Z"/><path class="bf-wing-inner" d="M30 30 Q40 18 48 24 Q52 28 45 33 Q38 36 30 30Z"/></g><ellipse cx="30" cy="30" rx="1.5" ry="8" fill="rgba(150,120,60,.8)"/><line x1="28" y1="22" x2="24" y2="16" stroke="rgba(150,120,60,.6)" stroke-width="0.8"/><line x1="32" y1="22" x2="36" y2="16" stroke="rgba(150,120,60,.6)" stroke-width="0.8"/></svg></div>';
-  content.appendChild(bw);sc.scrollTop=sc.scrollHeight;
+  content.appendChild(bw);bw.scrollIntoView({behavior:'smooth',block:'center'});
   // After descend finishes, switch to gentle floating
   const bf=bw.querySelector('.butterfly');
   bf.addEventListener('animationend',()=>{bf.classList.remove('bf-descend');bf.classList.add('bf-floating')},{once:true});
@@ -821,7 +824,7 @@ async function initCh7(){
   ww.innerHTML='<div class="wand"><div class="wand-tip"><div class="wand-orb1"></div><div class="wand-orb2"></div><div class="wand-orb3"></div></div><div class="wand-band" style="top:10px"></div><div class="wand-band" style="top:20px"></div></div>';
   const wHint=document.createElement('div');wHint.className='wand-hint';wHint.textContent='Hold the wand...';
   ww.appendChild(wHint);content.appendChild(ww);
-  await sleep(300);ww.style.opacity='1';sc.scrollTop=sc.scrollHeight;await sleep(800);wHint.classList.add('visible');
+  await sleep(300);ww.style.opacity='1';ww.scrollIntoView({behavior:'smooth',block:'center'});await sleep(800);wHint.classList.add('visible');
 
   ww.addEventListener('click',(e)=>{
     wHint.classList.remove('visible');wHint.style.opacity='0';
@@ -972,52 +975,38 @@ function startFireworks(){
   const ctx=c.getContext('2d');
   function resize(){c.width=innerWidth;c.height=innerHeight}
   resize();window.addEventListener('resize',resize);
-  const rockets=[],sparks=[];
-  const colors=['#d4a63c','#ffe8a0','#ff9060','#ff6090','#60d0ff','#a080ff','#80ff90','#ffffff'];
-  function launchRocket(){
-    rockets.push({
-      x:Math.random()*innerWidth*.6+innerWidth*.2,
-      y:innerHeight,
-      tx:Math.random()*innerWidth*.6+innerWidth*.2,
-      ty:Math.random()*innerHeight*.3+innerHeight*.1,
-      speed:3+Math.random()*2,trail:[]
-    });
-  }
+  const colors=['#d4a63c','#ffe8a0','#ff9060','#ff6090','#60d0ff','#a080ff','#ffffff'];
+  const sparks=[];
   function explode(x,y){
     const col=colors[Math.floor(Math.random()*colors.length)];
-    const n=40+Math.floor(Math.random()*30);
+    const n=25+Math.floor(Math.random()*15);
     for(let i=0;i<n;i++){
-      const a=Math.PI*2*i/n+Math.random()*.3;
-      const v=2+Math.random()*4;
-      sparks.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:1,decay:.008+Math.random()*.008,col,r:1.5+Math.random()*1.5});
+      const a=Math.PI*2*i/n;
+      const v=1.5+Math.random()*3;
+      sparks.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:1,decay:.01+Math.random()*.01,col,r:1.5+Math.random()*1});
     }
   }
   let fwFrame=0;
   function drawFW(){
     ctx.clearRect(0,0,c.width,c.height);
-    for(let i=rockets.length-1;i>=0;i--){
-      const r=rockets[i];
-      const dx=r.tx-r.x,dy=r.ty-r.y,d=Math.sqrt(dx*dx+dy*dy);
-      if(d<r.speed*2){explode(r.x,r.y);rockets.splice(i,1);continue}
-      r.x+=dx/d*r.speed;r.y+=dy/d*r.speed;
-    }
     for(let i=sparks.length-1;i>=0;i--){
-      const s=sparks[i];s.x+=s.vx;s.y+=s.vy;s.vy+=.04;s.vx*=.99;s.life-=s.decay;
+      const s=sparks[i];s.x+=s.vx;s.y+=s.vy;s.vy+=.03;s.vx*=.99;s.life-=s.decay;
       if(s.life<=0){sparks.splice(i,1);continue}
       ctx.globalAlpha=s.life;ctx.beginPath();ctx.arc(s.x,s.y,s.r*s.life,0,6.28);ctx.fillStyle=s.col;ctx.fill();
     }
     ctx.globalAlpha=1;
     fwFrame++;
-    if(fwFrame<600)requestAnimationFrame(drawFW);
+    if(fwFrame<500)requestAnimationFrame(drawFW);
     else{c.remove()}
   }
   let launches=0;
   function wave(){
-    if(launches>=20)return;
-    const n=2+Math.floor(Math.random()*3);
-    for(let i=0;i<n;i++)setTimeout(launchRocket,i*200);
-    launches+=n;
-    setTimeout(wave,800+Math.random()*1200);
+    if(launches>=12)return;
+    const x=Math.random()*innerWidth*.6+innerWidth*.2;
+    const y=Math.random()*innerHeight*.4+innerHeight*.1;
+    explode(x,y);
+    launches++;
+    setTimeout(wave,600+Math.random()*1000);
   }
   wave();
   requestAnimationFrame(drawFW);
