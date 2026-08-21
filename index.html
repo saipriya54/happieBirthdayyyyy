@@ -805,13 +805,31 @@ async function initCh7(){
 
   await addN('You know what\'s strange?');await addN('Before I met you,');await addN('these were just ordinary things.');await addN('Ordinary days.<br>Ordinary evenings.');await addN('Nothing particularly magical about them.');
   await sleep(1200);spawnP(innerWidth/2,innerHeight/2,5);
-  await addN('And then you came along.',true);spawnP(innerWidth/2,innerHeight/2,15);await sleep(800);
+  await addN('And then you came along.',true);spawnP(innerWidth/2,innerHeight/2,15);
+  // Float tiny hearts from bottom
+  function floatHeart(){
+    const h=document.createElement('div');
+    h.textContent='♥';
+    h.style.cssText='position:fixed;bottom:-20px;left:'+(15+Math.random()*70)+'%;font-size:'+(8+Math.random()*6)+'px;color:rgba(220,140,180,'+(0.3+Math.random()*0.3)+');pointer-events:none;z-index:200;transition:none';
+    document.body.appendChild(h);
+    const dur=4000+Math.random()*3000;
+    const drift=(Math.random()-.5)*60;
+    h.animate([
+      {transform:'translateX(0) translateY(0)',opacity:0.6},
+      {transform:'translateX('+drift+'px) translateY(-'+innerHeight+'px)',opacity:0}
+    ],{duration:dur,easing:'ease-out'});
+    setTimeout(()=>h.remove(),dur);
+  }
+  let heartTimer=setInterval(()=>{floatHeart()},800+Math.random()*600);
+  setTimeout(()=>{floatHeart()},100);setTimeout(()=>{floatHeart()},400);
+  await sleep(800);
   await addN('Somehow, your presence started finding its way into the smallest parts of my world.');
   await addN('Knowing you\'re somewhere out there...');
   await addN('somehow makes the world feel a little less ordinary.',true);
   await sleep(1200);
   await addN('You didn\'t have to do anything extraordinary.');
   await addN('You just had to be YOU.',true);
+  clearInterval(heartTimer);
   spawnP(innerWidth/2,innerHeight/2,25);await sleep(800);
   await addN('And somehow...');
   await addN('things became a little more magical.',true);
