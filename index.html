@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
 <title>happieBirthdayyyyy</title>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
@@ -159,14 +160,14 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .star-25.fading{opacity:0!important;transform:scale(.3)!important;transition:opacity 1.2s ease,transform 1.2s ease}
 
 /* ===== FIREWORKS ===== */
-.firework-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9998}
+.firework-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:5}
 
 /* ===== HAPPY BIRTHDAY SPECIAL ===== */
-.hb-special{font-family:inherit;font-size:clamp(1.6rem,5vw,2.4rem);color:var(--golden);text-align:center;
-  font-weight:200;letter-spacing:.12em;line-height:1.6;opacity:0;transition:opacity 3s ease;
+.hb-special{font-family:'Dancing Script','Brush Script MT','Segoe Script',cursive;font-size:clamp(1.6rem,5vw,2.4rem);color:var(--golden);text-align:center;
+  font-weight:400;letter-spacing:.08em;line-height:1.6;opacity:0;transition:opacity 3s ease;position:relative;z-index:10;
   text-shadow:0 0 30px rgba(212,166,60,.3),0 0 60px rgba(212,166,60,.15),0 0 100px rgba(212,166,60,.08);margin:32px 0 16px}
-.hb-special em{font-style:italic;font-weight:300;display:block;font-size:clamp(2.8rem,9vw,4.2rem);
-  margin-top:12px;letter-spacing:.06em;background:linear-gradient(90deg,#c89430,#ffe8a0,#d4a63c,#ffe8a0,#c89430);
+.hb-special em{font-style:italic;font-weight:400;display:block;font-size:clamp(2.8rem,9vw,4.2rem);
+  margin-top:12px;letter-spacing:.04em;background:linear-gradient(90deg,#c89430,#ffe8a0,#d4a63c,#ffe8a0,#c89430);
   background-size:200% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
   animation:hb-shimmer 4s ease-in-out infinite;
   filter:drop-shadow(0 0 24px rgba(212,166,60,.5)) drop-shadow(0 0 50px rgba(212,166,60,.2))}
@@ -184,7 +185,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
   opacity:0;transform:translateY(6px);transition:all 1s cubic-bezier(.25,.1,.25,1)}
 .phone-notification.visible{opacity:1;transform:translateY(0)}
 .notif-contact{font-size:.6rem;color:var(--golden);letter-spacing:.18em;margin-bottom:4px;font-weight:300}
-.notif-message{font-size:.55rem;color:var(--cream-soft);line-height:1.5;font-weight:300}
+.notif-message{font-size:.55rem;color:var(--cream-soft);line-height:1.5;font-weight:300;white-space:nowrap}
 @keyframes phone-vibrate{0%,100%{transform:translateX(0)}10%,30%,50%,70%,90%{transform:translateX(-2px)}20%,40%,60%,80%{transform:translateX(2px)}}
 .phone-vibrating{animation:phone-vibrate .4s ease 3}
 .chat-bubble{background:rgba(212,166,60,.04);
@@ -555,7 +556,7 @@ async function animateMeteor(fadeSelector){
     // Fade text if selector provided
     if(fadeSelector){
       const els=document.querySelectorAll(fadeSelector);
-      els.forEach(el=>{el.style.transition='opacity 2s ease';el.style.opacity='.15'});
+      els.forEach(el=>{el.style.transition='opacity 1.5s ease';el.style.opacity='0'});
     }
     const w=innerWidth,h=innerHeight;let f=0;const total=200;
     function step(){
@@ -589,7 +590,7 @@ async function startPrologue(){
   for(const l of lines){const p=document.createElement('div');p.className='narration';p.innerHTML=l;sc.appendChild(p);await sleep(350);p.classList.add('visible');await sleep(2200)}
   await sleep(3000);
   await animateMeteor('#prologue-scroll .narration');
-  await sleep(1200);
+  await sleep(2000);
   showScene('chapter1');
 }
 
@@ -724,7 +725,7 @@ async function revealStar(idx,stage,textBox,lineSvg,sc){
 // ============================================================
 async function initCh5(){
   const content=$('#ch5-content'),sc=$('#ch5-scroll');content.innerHTML='';
-  const lines=['There are things about yourself you probably don\'t notice.','You\'re softer than you think.','You\'re more caring than you show.','You\'re more sensitive than you let people see.','You have a quiet way of making your presence felt.','There\'s something comforting about you.','','Maybe you don\'t see these things.','<em>But they\'re there.</em>'];
+  const lines=['There are things about yourself you probably don\'t notice.','You\'re more sensitive than you let people see.','You have a quiet way of making your presence felt.','There\'s something comforting about you.','','Maybe you don\'t see these things.','<em>But they\'re there.</em>'];
   for(const l of lines){if(l===''){await sleep(1500);continue}const p=document.createElement('div');p.className='narration';p.innerHTML=l;content.appendChild(p);await sleep(400);p.classList.add('visible');await sleep(2200)}
   await sleep(1500);
   // Spacer before candle
@@ -810,7 +811,7 @@ async function initCh7(){
   await addN('somehow makes the world feel a little less ordinary.',true);
   await sleep(1200);
   await addN('You didn\'t have to do anything extraordinary.');
-  await addN('You just had to be you.',true);
+  await addN('You just had to be YOU.',true);
   spawnP(innerWidth/2,innerHeight/2,25);await sleep(800);
   await addN('And somehow...');
   await addN('things became a little more magical.',true);
@@ -947,7 +948,7 @@ async function initFinale(){
   rk.innerHTML='<div class="fw-rocket"><div class="fw-rocket-body"><div class="fw-rocket-stripe1"></div><div class="fw-rocket-stripe2"></div></div><div class="fw-rocket-fin-l"></div><div class="fw-rocket-fin-r"></div><div class="fw-rocket-fuse"></div><div class="fw-rocket-sparks"></div></div>';
   const rkHint=document.createElement('div');rkHint.className='rocket-hint';rkHint.textContent='Light the firework...';
   rk.appendChild(rkHint);content.appendChild(rk);
-  await sleep(300);rk.style.opacity='1';sc.scrollTop=sc.scrollHeight;await sleep(800);rkHint.classList.add('visible');
+  await sleep(300);rk.style.opacity='1';rk.scrollIntoView({behavior:'smooth',block:'center'});await sleep(800);rkHint.classList.add('visible');
 
   rk.addEventListener('click',()=>{
     rk.querySelector('.fw-rocket').classList.add('launched');
@@ -1037,14 +1038,13 @@ let playlistIdx=0;
 
 function playTrack(idx){
   playlistIdx=idx%playlist.length;
-  if(!bgmAudio){
-    bgmAudio=new Audio();
-    bgmAudio.volume=1.0;
-    bgmAudio.addEventListener('ended',function(){
-      playTrack(playlistIdx+1);
-    });
-  }
-  bgmAudio.src=playlist[playlistIdx];
+  if(bgmAudio){bgmAudio.pause();bgmAudio=null}
+  bgmAudio=new Audio(playlist[playlistIdx]);
+  bgmAudio.volume=1.0;
+  bgmAudio.addEventListener('ended',function(){
+    audioPlaying=false;
+    playTrack(playlistIdx+1);
+  });
   bgmAudio.load();
   var p=bgmAudio.play();
   if(p&&p.then)p.then(function(){
