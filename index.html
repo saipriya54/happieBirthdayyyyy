@@ -725,7 +725,7 @@ async function revealStar(idx,stage,textBox,lineSvg,sc){
 // ============================================================
 async function initCh5(){
   const content=$('#ch5-content'),sc=$('#ch5-scroll');content.innerHTML='';
-  const lines=['There are things about yourself you probably don\'t notice.','You\'re more sensitive than you let people see.','You have a quiet way of making your presence felt.','There\'s something comforting about you.','','Maybe you don\'t see these things.','<em>But they\'re there.</em>'];
+  const lines=['There are things about yourself you probably don\'t notice.','You feel things more deeply than you let on.','You have a quiet way of making your presence felt.','There\'s something comforting about you.','','Maybe you don\'t see these things.','<em>But they\'re there.</em>'];
   for(const l of lines){if(l===''){await sleep(1500);continue}const p=document.createElement('div');p.className='narration';p.innerHTML=l;content.appendChild(p);await sleep(400);p.classList.add('visible');await sleep(2200)}
   await sleep(1500);
   // Spacer before candle
