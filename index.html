@@ -691,8 +691,9 @@ async function revealStar(idx,stage,textBox,lineSvg,sc){
 
     // Touch a glowing star to continue
     await sleep(500);
-    // Hide the text area to avoid overlap
+    // Hide the text area and star labels
     textBox.style.transition='opacity 1s ease';textBox.style.opacity='0';
+    document.querySelectorAll('.cstar-label').forEach(l=>{l.style.transition='opacity .8s ease';l.style.opacity='0'});
     await sleep(600);textBox.style.display='none';
     // Pick a random star and make it glow brightly
     const glowIdx=Math.floor(Math.random()*allStars.length);
