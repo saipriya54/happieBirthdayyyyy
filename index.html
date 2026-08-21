@@ -586,10 +586,10 @@ async function startPrologue(){
   const dt=document.createElement('div');dt.className='narration';dt.style.cssText='color:var(--text-dim);letter-spacing:.35em;font-size:.78rem';dt.textContent='22 August 2001';sc.appendChild(dt);
   await sleep(200);dt.classList.add('visible');await sleep(2500);
   const lines=['Something happened.','A tiny human appeared on Earth.','And somehow...','the world became a little more interesting.','<em>Gani arrived.</em>','And apparently,','the Earth got a little better that day.'];
-  for(const l of lines){const p=document.createElement('div');p.className='narration';p.innerHTML=l;sc.appendChild(p);await sleep(350);p.classList.add('visible');await sleep(2000)}
-  await sleep(1500);
+  for(const l of lines){const p=document.createElement('div');p.className='narration';p.innerHTML=l;sc.appendChild(p);await sleep(350);p.classList.add('visible');await sleep(2200)}
+  await sleep(3000);
   await animateMeteor('#prologue-scroll .narration');
-  await sleep(800);
+  await sleep(1200);
   showScene('chapter1');
 }
 
@@ -677,17 +677,17 @@ async function revealStar(idx,stage,textBox,lineSvg,sc){
     hint.textContent='Tap the next star.';textBox.appendChild(hint);
     sc.scrollTop=sc.scrollHeight;
   }else{
-    await sleep(2000);
+    await sleep(3500);
     // Final constellation text
     textBox.innerHTML='';
     const fin=document.createElement('div');fin.className='narration';
     fin.innerHTML='There are still so many things I don\'t know about you.<br><br>And somehow...<br><br><em>that\'s nice.</em><br><br>There are still things left to discover.';
     textBox.appendChild(fin);await sleep(300);fin.classList.add('visible');
-    await sleep(1500);
+    await sleep(4000);
     // Light up entire constellation
     allStars.forEach(s=>{s.classList.remove('done');s.classList.add('revealed');s.style.opacity='1'});
     spawnBurst(innerWidth/2,innerHeight/2);
-    await sleep(1200);
+    await sleep(2000);
 
     // Touch a glowing star to continue
     await sleep(500);
@@ -828,16 +828,32 @@ async function initCh7(){
 
   ww.addEventListener('click',(e)=>{
     wHint.classList.remove('visible');wHint.style.opacity='0';
-    const r=ww.getBoundingClientRect();
-    const mx=r.left+r.width/2,my=r.top+r.height/4;
-    // Spawn lots of magic particles
-    for(let i=0;i<6;i++)setTimeout(()=>spawnBurst(mx+Math.random()*80-40,my+Math.random()*60-30),i*150);
-    // Magic flash from wand tip
-    const flash=document.createElement('div');flash.className='magic-flash';
-    flash.style.setProperty('--mx',mx+'px');flash.style.setProperty('--my',my+'px');
-    document.body.appendChild(flash);
-    setTimeout(()=>flash.remove(),2200);
-    setTimeout(()=>{showScene('chinnodu');initChinnodu()},2200);
+    const wand=ww.querySelector('.wand');
+    // Wand rises and moves across the screen, sprinkling sparks
+    ww.style.transition='transform 2.5s ease-in-out';
+    ww.style.transform='translateY(-30px)';
+    const w=innerWidth,h=innerHeight;
+    let sparkFrame=0;const totalFrames=150;
+    function sprinkle(){
+      if(sparkFrame>=totalFrames){
+        // Final flash
+        const flash=document.createElement('div');flash.className='magic-flash';
+        flash.style.setProperty('--mx',(w/2)+'px');flash.style.setProperty('--my',(h/2)+'px');
+        document.body.appendChild(flash);
+        setTimeout(()=>flash.remove(),2200);
+        setTimeout(()=>{showScene('chinnodu');initChinnodu()},2000);
+        return;
+      }
+      const t=sparkFrame/totalFrames;
+      // Wand sweeps in an arc across the screen
+      const sx=w*0.15+t*w*0.7;
+      const sy=h*0.3+Math.sin(t*Math.PI)*(-h*0.15);
+      if(sparkFrame%2===0)spawnP(sx,sy,3,'255,230,160');
+      if(sparkFrame%3===0)spawnP(sx+Math.random()*30-15,sy+Math.random()*20,2,'212,166,60');
+      if(sparkFrame%5===0)spawnP(sx+Math.random()*20-10,sy+Math.random()*30,1,'180,200,240');
+      sparkFrame++;requestAnimationFrame(sprinkle);
+    }
+    sprinkle();
   },{once:true});
 }
 
