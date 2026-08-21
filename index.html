@@ -561,8 +561,8 @@ async function animateMeteor(fadeSelector){
     function step(){
       if(f>=total){resolve();return}
       const t=f/total;
-      const mx=w*.95-t*w*.45;
-      const my=t*h*.5+Math.sin(t*Math.PI*2)*(h*.03);
+      const mx=w*.9-t*w*.4;
+      const my=t*t*h*.85+Math.sin(t*Math.PI*1.5)*(h*.02);
       // Main trail — bright golden
       if(f%2===0)spawnP(mx,my,3,'255,230,160');
       // Shimmer particles — scattered wider
