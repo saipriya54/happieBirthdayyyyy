@@ -332,17 +332,17 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 
 /* ===== BUTTERFLY ===== */
 .butterfly-wrap{position:relative;width:100%;height:140px;margin:24px 0;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.butterfly{position:absolute;left:50%;top:50%;animation:bf-float 10s ease-in-out infinite;filter:drop-shadow(0 0 8px rgba(212,166,60,.3))}
-@keyframes bf-float{0%{transform:translate(-50%,-50%) translate(0,0)}12%{transform:translate(-50%,-50%) translate(12px,-8px)}25%{transform:translate(-50%,-50%) translate(-8px,-4px)}37%{transform:translate(-50%,-50%) translate(6px,6px)}50%{transform:translate(-50%,-50%) translate(-14px,-2px)}62%{transform:translate(-50%,-50%) translate(4px,-10px)}75%{transform:translate(-50%,-50%) translate(-6px,4px)}87%{transform:translate(-50%,-50%) translate(10px,-6px)}100%{transform:translate(-50%,-50%) translate(0,0)}}
-.bf-wing{fill:rgba(212,166,60,.6);transition:fill .3s ease}
-.bf-wing-inner{fill:rgba(255,220,150,.4)}
+.butterfly{position:absolute;left:50%;top:50%;animation:bf-float 10s ease-in-out infinite;filter:drop-shadow(0 0 8px rgba(180,120,200,.4))}
+@keyframes bf-float{0%{transform:translate(-50%,-50%) translate(0,0)}12%{transform:translate(-50%,-50%) translate(30px,-8px) rotate(8deg)}25%{transform:translate(-50%,-50%) translate(-25px,-4px) rotate(-6deg)}37%{transform:translate(-50%,-50%) translate(20px,6px) rotate(5deg)}50%{transform:translate(-50%,-50%) translate(-35px,-2px) rotate(-8deg)}62%{transform:translate(-50%,-50%) translate(15px,-10px) rotate(4deg)}75%{transform:translate(-50%,-50%) translate(-20px,4px) rotate(-5deg)}87%{transform:translate(-50%,-50%) translate(28px,-6px) rotate(6deg)}100%{transform:translate(-50%,-50%) translate(0,0)}}
+.bf-wing{fill:rgba(180,120,200,.7);transition:fill .3s ease}
+.bf-wing-inner{fill:rgba(240,150,190,.5)}
 .butterfly svg{width:60px;height:60px}
 .bf-l,.bf-r{transform-origin:center;animation:bf-flap 1.2s ease-in-out infinite alternate}
 .bf-r{animation-delay:0.1s}
 @keyframes bf-flap{0%{transform:scaleX(1)}50%{transform:scaleX(0.55)}100%{transform:scaleX(1)}}
 .butterfly.caught{animation:bf-caught 1.5s ease forwards !important}
 .butterfly.caught .bf-l,.butterfly.caught .bf-r{animation:none;transform:scaleX(1)}
-.butterfly.caught .bf-wing{fill:rgba(212,166,60,.9)}
+.butterfly.caught .bf-wing{fill:rgba(200,140,220,.9)}
 @keyframes bf-caught{0%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.3)}100%{transform:translate(-50%,-50%) scale(0);opacity:0}}
 .bf-hint{font-size:clamp(.65rem,1.8vw,.75rem);color:var(--text-dim);letter-spacing:.15em;text-align:center;opacity:0;transition:opacity 1.5s ease;font-style:italic}
 .bf-hint.visible{opacity:1}
@@ -600,7 +600,7 @@ let cStep=0;
 const cData=[
   {label:'Shy',text:'Sometimes you want something...<br>but asking for it becomes the hardest thing.<br><br>And when you finally ask...<br><em>it\'s ridiculously cute.</em>'},
   {label:'What were you like as a kid?',text:'<span style="color:var(--peach);font-style:italic;font-size:.88rem">"What were you like as a kid?"</span><br><br>I don\'t know yet.<br><em>Maybe someday you\'ll tell me.</em>'},
-  {label:'Caring',text:'You don\'t always look like you care.<br>That\'s the funny thing.<br><br>You notice. You remember. You show up.<br><em>You care.</em>'},
+  {label:'Caring',text:'You don\'t always look like you care.<br>That\'s the funny thing.<br><br>You notice. You remember. You show up.<br><em>You Care, nak thelsu.</em>'},
   {label:'What makes you genuinely happy?',text:'<span style="color:var(--peach);font-style:italic;font-size:.88rem">"What makes you genuinely happy?"</span><br><br>I don\'t know yet.<br><em>But I\'d like to find out.</em>'},
   {label:'Mysterious',text:'There are approximately 847 things<br>I still don\'t understand about you.<br><br><em>Gani remains mysterious.</em>'},
   {label:'What kind of person do you want to become?',text:'<span style="color:var(--peach);font-style:italic;font-size:.88rem">"What kind of person do you want to become?"</span><br><br>I don\'t know yet.<br><em>But I think you\'re becoming someone good.</em>'},
@@ -681,7 +681,7 @@ async function revealStar(idx,stage,textBox,lineSvg,sc){
     // Final constellation text
     textBox.innerHTML='';
     const fin=document.createElement('div');fin.className='narration';
-    fin.innerHTML='There are still so many things I don\'t know about you.<br><br>And somehow...<br><br><em>that\'s nice.</em><br><br>There are still things left to discover.';
+    fin.innerHTML='There are still so many things I don\'t know about you.<br><br>And somehow...<br><br><em>I like it, melliga thelusukunta...</em><br><br>There are still things left to discover.';
     textBox.appendChild(fin);await sleep(300);fin.classList.add('visible');
     await sleep(4000);
     // Light up entire constellation
@@ -778,7 +778,7 @@ async function initCh6(){
 
   // Butterfly descends slowly from above, then floats gently
   const bw=document.createElement('div');bw.className='butterfly-wrap';bw.style.cssText='height:180px;margin:0';
-  bw.innerHTML='<div class="butterfly bf-descend"><svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g class="bf-l" style="transform-origin:30px 30px"><path class="bf-wing" d="M30 30 Q15 10 5 20 Q-2 28 10 35 Q18 40 30 30Z"/><path class="bf-wing-inner" d="M30 30 Q20 18 12 24 Q8 28 15 33 Q22 36 30 30Z"/></g><g class="bf-r" style="transform-origin:30px 30px"><path class="bf-wing" d="M30 30 Q45 10 55 20 Q62 28 50 35 Q42 40 30 30Z"/><path class="bf-wing-inner" d="M30 30 Q40 18 48 24 Q52 28 45 33 Q38 36 30 30Z"/></g><ellipse cx="30" cy="30" rx="1.5" ry="8" fill="rgba(150,120,60,.8)"/><line x1="28" y1="22" x2="24" y2="16" stroke="rgba(150,120,60,.6)" stroke-width="0.8"/><line x1="32" y1="22" x2="36" y2="16" stroke="rgba(150,120,60,.6)" stroke-width="0.8"/></svg></div>';
+  bw.innerHTML='<div class="butterfly bf-descend"><svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g class="bf-l" style="transform-origin:30px 30px"><path class="bf-wing" d="M30 30 Q18 8 6 16 Q-2 24 6 34 Q14 42 30 30Z"/><path class="bf-wing-inner" d="M30 30 Q22 16 14 22 Q9 27 14 33 Q20 37 30 30Z"/><path fill="rgba(220,170,230,.3)" d="M30 30 Q24 20 18 24 Q15 27 18 31 Q22 34 30 30Z"/></g><g class="bf-r" style="transform-origin:30px 30px"><path class="bf-wing" d="M30 30 Q42 8 54 16 Q62 24 54 34 Q46 42 30 30Z"/><path class="bf-wing-inner" d="M30 30 Q38 16 46 22 Q51 27 46 33 Q40 37 30 30Z"/><path fill="rgba(220,170,230,.3)" d="M30 30 Q36 20 42 24 Q45 27 42 31 Q38 34 30 30Z"/></g><ellipse cx="30" cy="30" rx="1.8" ry="9" fill="rgba(80,40,80,.8)"/><circle cx="25" cy="17" r="1.5" fill="rgba(80,40,80,.7)"/><circle cx="35" cy="17" r="1.5" fill="rgba(80,40,80,.7)"/><line x1="28" y1="22" x2="25" y2="17" stroke="rgba(80,40,80,.6)" stroke-width="0.8"/><line x1="32" y1="22" x2="35" y2="17" stroke="rgba(80,40,80,.6)" stroke-width="0.8"/></svg></div>';
   content.appendChild(bw);bw.scrollIntoView({behavior:'smooth',block:'center'});
   // After descend finishes, switch to gentle floating
   const bf=bw.querySelector('.butterfly');
