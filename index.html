@@ -823,7 +823,7 @@ async function initCh7(){
   // Magic wand instead of continue
   const ww=document.createElement('div');ww.className='wand-wrap';ww.style.cssText='opacity:0;transition:opacity 1.2s ease';
   ww.innerHTML='<div class="wand"><div class="wand-tip"><div class="wand-orb1"></div><div class="wand-orb2"></div><div class="wand-orb3"></div></div><div class="wand-band" style="top:10px"></div><div class="wand-band" style="top:20px"></div></div>';
-  const wHint=document.createElement('div');wHint.className='wand-hint';wHint.textContent='Hold the wand, my dear magician...';
+  const wHint=document.createElement('div');wHint.className='wand-hint';wHint.textContent='Dear Magician, hold your wand...';
   ww.appendChild(wHint);content.appendChild(ww);
   await sleep(300);ww.style.opacity='1';ww.scrollIntoView({behavior:'smooth',block:'center'});await sleep(800);wHint.classList.add('visible');
 
