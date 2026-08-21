@@ -163,10 +163,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .firework-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:5}
 
 /* ===== HAPPY BIRTHDAY SPECIAL ===== */
-.hb-special{font-family:'Dancing Script','Brush Script MT','Segoe Script',cursive;font-size:clamp(1.6rem,5vw,2.4rem);color:var(--golden);text-align:center;
+.hb-special{font-family:'Dancing Script','Brush Script MT','Segoe Script',cursive;font-size:clamp(2rem,6vw,3rem);color:var(--golden);text-align:center;
   font-weight:400;letter-spacing:.08em;line-height:1.6;opacity:0;transition:opacity 3s ease;position:relative;z-index:10;
   text-shadow:0 0 30px rgba(212,166,60,.3),0 0 60px rgba(212,166,60,.15),0 0 100px rgba(212,166,60,.08);margin:32px 0 16px}
-.hb-special em{font-style:italic;font-weight:400;display:block;font-size:clamp(2.8rem,9vw,4.2rem);
+.hb-special em{font-style:italic;font-weight:700;display:block;font-size:clamp(3.5rem,12vw,5.5rem);
   margin-top:12px;letter-spacing:.04em;background:linear-gradient(90deg,#c89430,#ffe8a0,#d4a63c,#ffe8a0,#c89430);
   background-size:200% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
   animation:hb-shimmer 4s ease-in-out infinite;
@@ -182,7 +182,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .phone-notch{width:28%;height:16px;background:var(--bg);border-radius:0 0 8px 8px;position:absolute;top:0}
 .phone-notification{width:80%;background:rgba(212,166,60,.04);
   border:1px solid rgba(212,166,60,.08);border-radius:12px;padding:14px;
-  opacity:0;transform:translateY(6px);transition:all 1s cubic-bezier(.25,.1,.25,1)}
+  opacity:0;transform:translateY(6px);transition:all 1s cubic-bezier(.25,.1,.25,1);text-align:left}
 .phone-notification.visible{opacity:1;transform:translateY(0)}
 .notif-contact{font-size:.6rem;color:var(--golden);letter-spacing:.18em;margin-bottom:4px;font-weight:300}
 .notif-message{font-size:.55rem;color:var(--cream-soft);line-height:1.5;font-weight:300;white-space:nowrap}
@@ -899,7 +899,7 @@ async function initChinnodu(){
   gw.innerHTML='<div class="gift-box"><div class="gift-base"><div class="gift-shine"></div></div><div class="gift-lid"></div><div class="gift-bow"></div><div class="gift-bow-knot"></div></div>';
   const gHint=document.createElement('div');gHint.className='gift-hint';gHint.textContent='Open the gift...';
   gw.appendChild(gHint);content.appendChild(gw);
-  await sleep(300);gw.style.opacity='1';sc.scrollTop=sc.scrollHeight;await sleep(800);gHint.classList.add('visible');
+  await sleep(300);gw.style.opacity='1';gw.scrollIntoView({behavior:'smooth',block:'center'});await sleep(800);gHint.classList.add('visible');
 
   gw.addEventListener('click',()=>{
     gw.querySelector('.gift-box').classList.add('opened');
@@ -916,7 +916,7 @@ async function initChinnodu(){
 // ============================================================
 async function initFinale(){
   const content=$('#finale-content'),sc=$('#finale-scroll');content.innerHTML='';
-  async function addN(t,em=false){const p=document.createElement('div');p.className='narration';p.innerHTML=em?'<em>'+t+'</em>':t;content.appendChild(p);await sleep(300);p.classList.add('visible');sc.scrollTop=sc.scrollHeight;await sleep(2000)}
+  async function addN(t,em=false){const p=document.createElement('div');p.className='narration';p.innerHTML=em?'<em>'+t+'</em>':t;content.appendChild(p);await sleep(300);p.classList.add('visible');p.scrollIntoView({behavior:'smooth',block:'center'});await sleep(2000)}
 
   spawnP(innerWidth*.8,50,18);await sleep(500);spawnP(innerWidth*.6,80,12);await sleep(500);spawnP(innerWidth*.4,60,8);
   await sleep(1000);
