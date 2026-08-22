@@ -739,7 +739,7 @@ async function initCh5(){
   await sleep(2500);
   wish.style.transition='opacity 1.5s ease';wish.style.opacity='0';
   await sleep(1500);wish.remove();
-  const hint=document.createElement('div');hint.className='candle-hint';hint.textContent='Now blow out the candle...';
+  const hint=document.createElement('div');hint.className='candle-hint';hint.textContent='Touch the flame to blow it out...';
   cw.appendChild(hint);await sleep(300);hint.classList.add('visible');
   cw.addEventListener('click',()=>{
     cw.querySelector('.candle').classList.add('candle-blown');
