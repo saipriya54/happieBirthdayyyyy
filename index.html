@@ -677,13 +677,13 @@ async function revealStar(idx,stage,textBox,lineSvg,sc){
     hint.textContent='Tap the next star.';textBox.appendChild(hint);
     sc.scrollTop=sc.scrollHeight;
   }else{
-    await sleep(3500);
+    await sleep(5000);
     // Final constellation text
     textBox.innerHTML='';
     const fin=document.createElement('div');fin.className='narration';
     fin.innerHTML='There are still so many things I don\'t know about you.<br><br>And somehow...<br><br><em>I like it, melliga thelusukunta...</em><br><br>There are still things left to discover.';
     textBox.appendChild(fin);await sleep(300);fin.classList.add('visible');
-    await sleep(4000);
+    await sleep(6000);
     // Light up entire constellation
     allStars.forEach(s=>{s.classList.remove('done');s.classList.add('revealed');s.style.opacity='1'});
     spawnBurst(innerWidth/2,innerHeight/2);
@@ -884,7 +884,7 @@ async function initChinnodu(){
   async function addN(t,em=false){const p=document.createElement('div');p.className='narration';p.innerHTML=em?'<em>'+t+'</em>':t;content.appendChild(p);await sleep(300);p.classList.add('visible');sc.scrollTop=sc.scrollHeight;await sleep(2000)}
 
   const phoneDiv=document.createElement('div');phoneDiv.style.margin='20px 0';
-  phoneDiv.innerHTML='<div class="phone-body" id="chin-phone"><div class="phone-notch"></div><div class="phone-notification" id="chin-notif"><div class="notif-contact">Chinnodu ✨</div><div class="notif-message">new message</div></div></div>';
+  phoneDiv.innerHTML='<div class="phone-body" id="chin-phone"><div class="phone-notch"></div><div class="phone-notification" id="chin-notif"><div class="notif-contact" style="white-space:nowrap">Chinnodu ✨</div><div class="notif-message">new message</div></div></div>';
   content.appendChild(phoneDiv);
   await sleep(1000);
 
